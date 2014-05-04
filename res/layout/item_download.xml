@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/listview_selector"
+    android:padding="5dp" >
+
+    <RelativeLayout
+        android:id="@+id/item_download_rl"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        
+        android:tag="front" >
+
+        <ImageView
+            android:id="@+id/item_download_icon"
+            android:layout_width="50.0dip"
+            android:layout_height="50.0dip"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10.0dip"
+            android:src="@drawable/image_no" />
+
+        <TextView
+            android:id="@+id/item_download_name"
+            android:layout_width="wrap_content"
+            android:layout_height="25.0dip"
+            android:layout_marginLeft="10.0dip"
+            android:layout_marginRight="58.0dip"
+            android:layout_toRightOf="@id/item_download_icon"
+            android:duplicateParentState="true"
+            android:ellipsize="end"
+            android:gravity="left|center"
+            android:includeFontPadding="false"
+            android:padding="0.0dip"
+            android:singleLine="true"
+            android:text=" "
+            android:textSize="15.0sp" />
+
+        <TextView
+            android:id="@+id/item_download_size"
+            android:layout_width="wrap_content"
+            android:layout_height="25.0dip"
+            android:layout_below="@id/item_download_name"
+            android:layout_marginLeft="64.0dip"
+            android:layout_marginRight="30.0dip"
+            android:layout_marginTop="2.0dip"
+            android:duplicateParentState="true"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:paddingLeft="6.0dip"
+            android:paddingRight="6.0dip"
+            android:singleLine="true"
+            android:text=" "
+            android:textColor="@color/gray"
+            android:textSize="12.0sp" />
+
+        <Button
+            android:id="@+id/item_download_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/common_btn_selector"
+            android:text="启动"
+            android:textColor="@color/btn_text_color" />
+    </RelativeLayout>
+
+</FrameLayout>

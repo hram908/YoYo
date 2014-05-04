@@ -1,0 +1,40 @@
+8
+
+dir
+930
+svn://192.168.0.115/wwt_android/MobileGame/res/values-zh
+svn://192.168.0.115/wwt_android
+
+
+
+2013-12-19T03:11:06.424500Z
+628
+ch_chui
+
+
+svn:special svn:externals svn:needs-lock
+
+umeng_update_string.xml
+file
+
+
+
+
+2013-09-12T07:04:36.000000Z
+e9480e97661a439a4e70ddee13f3da83
+2013-12-19T03:11:06.424500Z
+628
+ch_chui
+
+umeng_common_strings.xml
+file
+
+
+
+
+2013-09-12T07:04:36.000000Z
+959d210d7ac9280d68a2be136e0215b9
+2013-12-19T03:11:06.424500Z
+628
+ch_chui
+

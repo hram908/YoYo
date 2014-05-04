@@ -1,0 +1,716 @@
+package com.asktun.mg.fragment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import net.tsz.afinal.FinalActivity;
+import net.tsz.afinal.annotation.view.ViewInject;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
+
+import com.ab.util.AbFileUtil;
+import com.asktun.mg.BaseFragment;
+import com.asktun.mg.R;
+import com.asktun.mg.UIDataProcess;
+import com.asktun.mg.activity.GameDetailActivity;
+import com.asktun.mg.activity.GameSortActivity;
+import com.asktun.mg.activity.NearGroupActivity;
+import com.asktun.mg.activity.SearchActivity;
+import com.asktun.mg.bean.GameInfo;
+import com.asktun.mg.bean.GameSortBean;
+import com.asktun.mg.bean.GameSortBean.SortInfo;
+import com.asktun.mg.bean.GamesNearBean;
+import com.asktun.mg.download.DownloadTask;
+import com.asktun.mg.download.FinalDBChen;
+import com.asktun.mg.fragment.UserDownloadFragment.DeleteTask;
+import com.asktun.mg.utils.Util;
+import com.asktun.mg.view.StarLayout;
+import com.asktun.mg.view.XListView;
+import com.chen.jmvc.util.IResponseListener;
+
+/**
+ * 游戏
+ * 
+ * @Description
+ * @author Dean
+ * 
+ */
+public class GameFragment extends BaseFragment {
+	public static UserDownloadFragment downloadFragment;
+
+	private View view;
+
+	@ViewInject(id = R.id.rgroup)
+	private RadioGroup rg;
+	@ViewInject(id = R.id.lv_1)
+	private XListView listView1;
+	@ViewInject(id = R.id.lv_2)
+	private XListView listView2;
+	@ViewInject(id = R.id.gridview)
+	private GridView gridView;
+
+	private int type;
+	private GameAdapter adapter1;
+	private GroupAdapter adapter2;
+	private SortAdapter adapter3;
+
+	private List<SortInfo> siList = new ArrayList<SortInfo>();
+	private List<GameInfo> gameList = new ArrayList<GameInfo>();
+
+	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			// 拿到下载状态
+			int state = intent.getIntExtra(DOWNLOAD_TYPE, 0);
+			// 得到下载完成的对象
+			GameInfo down = mApplication.getDownloadSuccess();
+			int position = down.getPosition();// 对应的位置
+			System.out.println("对应的位置为：" + position);
+			switch (state) {
+			case DOWNLOAD_STATE_DELETE:
+				// 任务删除,可以重新下载
+				// Toast.makeText(getApplicationContext(),"接到了删除的广播!",
+				// Toast.LENGTH_SHORT).show();
+				if (adapter1 != null) {
+					// list.get(position).setDownloadState(DOWNLOAD_STATE_DELETE);
+					adapter1.notifyDataSetChanged();
+				}
+				break;
+			case DOWNLOAD_STATE_SUCCESS:
+				// 下载完成,可以进行完成之后的操作
+				// Toast.makeText(getApplicationContext(),"接到了下载完成的广播!",
+				// Toast.LENGTH_SHORT).show();
+				if (adapter1 != null) {
+					// list.get(position).setDownloadState(DOWNLOAD_STATE_SUCCESS);
+					adapter1.notifyDataSetChanged();
+				}
+				break;
+			case DOWNLOAD_STATE_FAIL:
+				// 下载失败
+				if (adapter1 != null) {
+					// list.get(position).setDownloadState(DOWNLOAD_STATE_FAIL);
+					adapter1.notifyDataSetChanged();
+				}
+				break;
+			case DOWNLOAD_STATE_START:
+				// 开始下载
+				if (adapter1 != null) {
+					// list.get(position).setDownloadState(DOWNLOAD_STATE_START);
+					adapter1.notifyDataSetChanged();
+				}
+				break;
+
+			default:
+				break;
+			}
+		}
+	};
+
+	private BroadcastReceiver mDownloadBroadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// 获得需要下载的对象
+			System.out.println("start````download````receiver~!!!");
+			GameInfo down = act.getMyApplication().getStartDownloadMovieItem();
+			View view = act.getLayoutInflater().inflate(R.layout.item_download,
+					null);
+			down.setDownloadState(DOWNLOAD_STATE_START);
+			// String fileName =
+			// Utils.getNameFromUrl("http://117.135.129.181/wap/468816.mp3");//test
+			String fileName = Util.getNameFromUrl(down.getUrl());
+			String path = Environment.getExternalStorageDirectory().getPath()
+					+ "/mobilegame" + AbFileUtil.getDownPathFileDir()
+					+ fileName;
+			down.setFilePath(path);
+			System.out.println("path~~~~~~~~~" + path);
+			// listview_lin.addView(view);
+
+			// 开启下载任务
+			new DownloadTask(act, view, down, false);
+		}
+	};
+
+	@Override
+	public void addChildView(ViewGroup contentLayout) {
+		// TODO Auto-generated method stub
+		super.addChildView(contentLayout);
+		view = mInflater.inflate(R.layout.fragment_game, null);
+		FinalActivity.initInjectedView(this, view);
+		contentLayout.addView(view, layoutParamsFF);
+		addRightButtonView(R.drawable.search_btn_selector).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(act,SearchActivity.class));
+			}
+		});
+		setTitleText("游戏");
+		init();
+		initBroadcast();
+		getNearGames();
+		getGameSort();
+	}
+
+	private void init() {
+		db = new FinalDBChen(act, DBNAME, new GameInfo(), TABNAME_DOWNLOADTASK,
+				null);
+		rg.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				// TODO Auto-generated method stub
+				if (checkedId == R.id.rb_1) {
+					type = 0;
+					listView1.setVisibility(View.VISIBLE);
+					listView2.setVisibility(View.GONE);
+					gridView.setVisibility(View.GONE);
+				} else if (checkedId == R.id.rb_2) {
+					type = 1;
+					gridView.setVisibility(View.VISIBLE);
+					listView2.setVisibility(View.GONE);
+					listView1.setVisibility(View.GONE);
+				} else {
+					type = 2;
+					gridView.setVisibility(View.GONE);
+					listView2.setVisibility(View.VISIBLE);
+					listView1.setVisibility(View.GONE);
+				}
+			}
+		});
+
+		adapter1 = new GameAdapter();
+		adapter2 = new GroupAdapter();
+		adapter3 = new SortAdapter();
+		listView1.setAdapter(adapter1);
+		listView2.setAdapter(adapter2);
+		listView1.setPullLoadEnable(false);
+		listView1.setPullRefreshEnable(false);
+		listView2.setPullLoadEnable(false);
+		listView2.setPullRefreshEnable(false);
+		gridView.setAdapter(adapter3);
+
+		listView1.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+					long arg3) {
+				GameInfo gi = gameList.get(position - 1);
+				Intent intent = new Intent(act, GameDetailActivity.class);
+				intent.putExtra("gameId", gi.getGame_id());
+				intent.putExtra("gameName", gi.getGame_name());
+				startActivity(intent);
+			}
+		});
+
+		listView2.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				startActivity(new Intent(act, NearGroupActivity.class));
+			}
+		});
+
+		gridView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+				// TODO Auto-generated method stub
+				SortInfo si = siList.get(position);
+				Intent intent = new Intent(act, GameSortActivity.class);
+				intent.putExtra("sortTitle", si.getCate_name());
+				intent.putExtra("sortId", si.getCate_id());
+				startActivity(intent);
+			}
+		});
+	}
+
+	private void initBroadcast() {
+		// 注册广播
+		IntentFilter myIntentFilter = new IntentFilter();
+		myIntentFilter.addAction(DOWNLOAD_TYPE);
+		act.registerReceiver(mBroadcastReceiver, myIntentFilter);
+
+		System.out.println("register download broadcast~~~~~~~");
+		// 注册广播
+		IntentFilter mydownloadIntentFilter = new IntentFilter();
+		mydownloadIntentFilter.addAction("download");
+		act.registerReceiver(mDownloadBroadcastReceiver, mydownloadIntentFilter);
+	}
+
+	private class GameAdapter extends BaseAdapter {
+
+		// private List<ActiveListItem> list = new ArrayList<ActiveListItem>();
+		//
+		// public void add(ActiveListItem o) {
+		// list.add(o);
+		// }
+		//
+		// public void clear() {
+		// list.clear();
+		// }
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return gameList.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			// TODO Auto-generated method stub
+			return gameList.get(arg0);
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			// TODO Auto-generated method stub
+			return arg0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			ViewHolder holder;
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater.inflate(R.layout.item_gamelist, null,
+						false);
+				holder.iv = (ImageView) convertView.findViewById(R.id.image);
+				holder.tv_name = (TextView) convertView
+						.findViewById(R.id.tv_name);
+				holder.tv_gametype = (TextView) convertView
+						.findViewById(R.id.tv_gametype);
+				holder.tv_size = (TextView) convertView
+						.findViewById(R.id.tv_size);
+				holder.tv_playcount = (TextView) convertView
+						.findViewById(R.id.tv_playcount);
+				holder.starLayout = (StarLayout) convertView
+						.findViewById(R.id.starLayout);
+				holder.btn_download = (Button) convertView
+						.findViewById(R.id.btn_download);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			GameInfo gi = gameList.get(position);
+			if (gi != null) {
+				imageLoader.displayImage(gi.getGame_ico(), holder.iv);
+				holder.tv_name.setText(gi.getGame_name());
+				holder.tv_gametype.setText(gi.getCate_name());
+				holder.tv_playcount.setText(gi.getUser_num() + "人在玩");
+				holder.tv_size.setText(Double.parseDouble(gi.getSize())/1024 + "M");
+				holder.starLayout.setCount(Integer.parseInt(gi.getScore()));
+				holder.btn_download.setOnClickListener(new DownloadClick(gi,
+						holder.btn_download, position));
+			}
+
+			return convertView;
+		}
+
+		private class ViewHolder {
+			ImageView iv;
+			TextView tv_name;
+			TextView tv_size;
+			TextView tv_gametype;
+			TextView tv_playcount;
+			StarLayout starLayout;
+			Button btn_download;
+		}
+
+	}
+
+	class DownloadClick implements OnClickListener {
+
+		private GameInfo down;
+		private Button bt;
+		private int position;
+
+		/**
+		 * Title: Description:
+		 */
+		public DownloadClick(GameInfo down, Button bt, int position) {
+			this.bt = bt;
+			this.down = down;
+			this.position = position;
+
+		}
+
+		/**
+		 * (非 Javadoc) Title: onClick Description:
+		 * 
+		 * @param v
+		 * @see android.view.View.OnClickListener#onClick(android.view.View)
+		 */
+		@Override
+		public void onClick(View v) {
+
+			Log.v("test", "download````````````");
+			if (!Environment.getExternalStorageState().equals(
+					Environment.MEDIA_MOUNTED)) {
+				// 无sd卡
+				showToast("没找到存储卡");
+				return;
+			}
+			// test
+//			down = new GameInfo();
+//			down.setCate_name("1");
+//			down.setGame_id("1");
+//			down.setGame_name("P vs Z");
+//			down.setUrl("http://117.135.129.181/wap/468816.mp3");
+
+			System.out.println("点击了：" + down.getPosition());
+			int state = down.getDownloadState();
+			switch (state) {
+			case DOWNLOAD_STATE_DELETE:
+				// 可下载
+				toDownload();
+				break;
+			case DOWNLOAD_STATE_SUCCESS:
+				// 播放打开等等操作
+				// Toast.makeText(getApplicationContext(),"打开了："+down.getMovieName(),
+				// Toast.LENGTH_SHORT).show();
+				break;
+			case DOWNLOAD_STATE_WATTING:
+				toDownload();
+				break;
+			case DOWNLOAD_STATE_NONE:
+				toDownload();
+				break;
+			case DOWNLOAD_STATE_START:
+				showToast("正在下载!");
+				break;
+			default:
+				break;
+			}
+		}
+
+		public void toDownload() {
+			System.out.println(down.getGame_name() + ":DOWNLOAD_STATE_START"
+					+ ":toDownload");
+			down.setPosition(position);
+			down.setDownloadState(DOWNLOAD_STATE_START);
+			mApplication.setStartDownloadMovieItem(down);
+			act.sendBroadcast(new Intent().setAction("download"));
+			// bt.setClickable(false);
+			// bt.setText("下载中");
+			// 将最初的数据保存到数据库.主要是为了 让数据库中的数据第一反应与所操作的状态一致,因为在后面的下载任务中.在线程中更改数据库状态
+			// 如果在线程未开始且程序退出的情况.那么这个状态会不正确
+			List<GameInfo> ls = db.findItemsByWhereAndWhereValue("game_name",
+					down.getGame_name(), GameInfo.class, TABNAME_DOWNLOADTASK,
+					null);
+			if (ls.size() == 0) {
+				// 说明没有此条数据
+				db.insertObject(down, TABNAME_DOWNLOADTASK);
+			} else {
+				// 更新这个状态
+				db.updateValuesByJavaBean(TABNAME_DOWNLOADTASK, "game_name=?",
+						new String[] { down.getGame_name() }, down);
+			}
+		}
+
+	}
+
+	private class GroupAdapter extends BaseAdapter {
+
+		// private List<ActiveListItem> list = new ArrayList<ActiveListItem>();
+		//
+		// public void add(ActiveListItem o) {
+		// list.add(o);
+		// }
+		//
+		// public void clear() {
+		// list.clear();
+		// }
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return 12;
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public View getView(int arg0, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			ViewHolder holder;
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater.inflate(R.layout.item_neargroup, null,
+						false);
+				holder.iv = (ImageView) convertView.findViewById(R.id.image);
+				holder.tv_name = (TextView) convertView
+						.findViewById(R.id.tv_name);
+				holder.tv_count = (TextView) convertView
+						.findViewById(R.id.tv_count);
+				holder.tv_distance = (TextView) convertView
+						.findViewById(R.id.tv_distance);
+				holder.tv_descrip = (TextView) convertView
+						.findViewById(R.id.tv_descrip);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+
+			return convertView;
+		}
+
+		private class ViewHolder {
+			ImageView iv;
+			TextView tv_name;
+			TextView tv_count;
+			TextView tv_distance;
+			TextView tv_descrip;
+		}
+
+	}
+
+	private class SortAdapter extends BaseAdapter {
+
+		// private List<ActiveListItem> list = new ArrayList<ActiveListItem>();
+		//
+		// public void add(ActiveListItem o) {
+		// list.add(o);
+		// }
+		//
+		// public void clear() {
+		// list.clear();
+		// }
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return siList.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			// TODO Auto-generated method stub
+			return siList.get(arg0);
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			// TODO Auto-generated method stub
+			return arg0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			ViewHolder holder;
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater.inflate(R.layout.item_gamesort, null,
+						false);
+				holder.iv = (ImageView) convertView.findViewById(R.id.image);
+				holder.tv_name = (TextView) convertView
+						.findViewById(R.id.tv_name);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			SortInfo si = siList.get(position);
+			if (si != null) {
+				imageLoader.displayImage(si.getCategory_img(), holder.iv,
+						options_game);
+				holder.tv_name.setText(si.getCate_name());
+			}
+
+			return convertView;
+		}
+
+		private class ViewHolder {
+			ImageView iv;
+			TextView tv_name;
+		}
+
+	}
+
+	private void getNearGames() {
+		HashMap<String, Object> params = new HashMap<String, Object>();
+//		params.put("long", mApplication.mLocation.getLongitude());
+		params.put("long", "114.423550");
+		params.put("lati", "30.506830");
+		params.put("distance", 2000);
+//		params.put("page", "1");
+//		params.put("pagesize", "12");
+		params.put("token", mApplication.getLoginbean().token);
+		UIDataProcess.reqData(GamesNearBean.class, params, null,
+				new IResponseListener() {
+
+					@Override
+					public void onSuccess(Object arg0) {
+						// TODO Auto-generated method stub
+						GamesNearBean data = (GamesNearBean) arg0;
+						if (data != null) {
+							if (data.getFlg() == 1) {
+								gameList = data.getData();
+								adapter1.notifyDataSetChanged();
+							} else if (data.getFlg() == 0) {
+								showToast("没有数据");
+							}
+						} else {
+							showToast("获取数据失败");
+						}
+					}
+
+					@Override
+					public void onRuning(Object arg0) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onReqStart() {
+						// TODO Auto-generated method stub
+						//();
+					}
+
+					@Override
+					public void onFinish() {
+						// TODO Auto-generated method stub
+						//removeProgressDialog();
+					}
+
+					@Override
+					public void onFailure(Object arg0) {
+						// TODO Auto-generated method stub
+						showToast("获取数据失败");
+					}
+				});
+	}
+
+	private void getGameSort() {
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		UIDataProcess.reqData(GameSortBean.class, params, null,
+				new IResponseListener() {
+
+					@Override
+					public void onSuccess(Object arg0) {
+						// TODO Auto-generated method stub
+						GameSortBean data = (GameSortBean) arg0;
+						if (data != null) {
+							if (data.getFlg() == 1) {
+								siList = data.getData();
+								adapter3.notifyDataSetChanged();
+							} else if (data.getFlg() == 0) {
+								//showToast("没有数据");
+							}
+						} else {
+							showToast("获取数据失败");
+						}
+					}
+
+					@Override
+					public void onRuning(Object arg0) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onReqStart() {
+						// TODO Auto-generated method stub
+						//showProgressDialog();
+					}
+
+					@Override
+					public void onFinish() {
+						// TODO Auto-generated method stub
+						removeProgressDialog();
+					}
+
+					@Override
+					public void onFailure(Object arg0) {
+						// TODO Auto-generated method stub
+						showToast("获取数据失败");
+					}
+				});
+	}
+	
+	private void getGameGroups() {
+		HashMap<String, Object> params = new HashMap<String, Object>();
+//		params.put("long", mApplication.mLocation.getLongitude());
+		params.put("long", "114.423550");
+		params.put("lati", "30.506830");
+		params.put("distance", 2000);
+//		params.put("page", "1");
+//		params.put("pagesize", "12");
+		params.put("token", mApplication.getLoginbean().token);
+		UIDataProcess.reqData(GamesNearBean.class, params, null,
+				new IResponseListener() {
+
+					@Override
+					public void onSuccess(Object arg0) {
+						// TODO Auto-generated method stub
+						GamesNearBean data = (GamesNearBean) arg0;
+						if (data != null) {
+							if (data.getFlg() == 1) {
+								gameList = data.getData();
+								adapter1.notifyDataSetChanged();
+							} else if (data.getFlg() == 0) {
+								showToast("没有数据");
+							}
+						} else {
+							showToast("获取数据失败");
+						}
+					}
+
+					@Override
+					public void onRuning(Object arg0) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onReqStart() {
+						// TODO Auto-generated method stub
+						//();
+					}
+
+					@Override
+					public void onFinish() {
+						// TODO Auto-generated method stub
+						//removeProgressDialog();
+					}
+
+					@Override
+					public void onFailure(Object arg0) {
+						// TODO Auto-generated method stub
+						showToast("获取数据失败");
+					}
+				});
+	}
+
+}

@@ -1,0 +1,126 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/sub2_icon_rl"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="群头像"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <FrameLayout
+            android:id="@+id/fl_image"
+            android:layout_width="@dimen/img_width"
+            android:layout_height="@dimen/img_width"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="2dp" >
+
+            <ImageView
+                android:id="@+id/sub2_icon"
+                android:layout_width="@dimen/img_width"
+                android:layout_height="@dimen/img_width"
+                android:src="@drawable/moren_img"
+                android:contentDescription="@string/app_name"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:layout_width="@dimen/img_width"
+                android:layout_height="@dimen/img_width"
+                android:contentDescription="@string/app_name"
+                android:duplicateParentState="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/icon_bg" />
+        </FrameLayout>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/line" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp" >
+
+        <TextView
+            android:id="@+id/tv_qunmingcheng"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="群名称"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/sub2_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:background="@null"
+            android:hint="名称"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/line" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="群介绍"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/sub2_info"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:background="@null"
+            android:hint="介绍"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/line" />
+
+</LinearLayout>

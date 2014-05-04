@@ -1,0 +1,57 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_marginTop="10dip"
+        android:background="@drawable/bg_listview"
+        android:gravity="center_vertical"
+        android:paddingBottom="15dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="15dp" >
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/moren_img" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/btn_pickphoto"
+                android:layout_width="108dp"
+                android:layout_height="48dp"
+                android:background="@drawable/button_gray_selector"
+                android:padding="8dp"
+                android:text="相册选取"
+                android:textColor="@color/gray"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btn_takephoto"
+                android:layout_width="108dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_gray_selector"
+                android:padding="8dp"
+                android:text="现在拍照"
+                android:textColor="@color/gray"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

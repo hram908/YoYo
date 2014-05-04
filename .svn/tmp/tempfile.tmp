@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.asktun.mg"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <application
+        android:name="com.asktun.mg.MyApp"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.asktun.mg.activity.WelcomeActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.PageFrameActivity"
+            android:configChanges="keyboard|orientation"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.NearPersonActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.NearGroupActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.GroupHostActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.ApplyGroupActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.ChatActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.GroupSpaceActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.CreatActiveActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.UserInfoActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.UserDownloadActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.UserPointActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.UserCommentActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.UserFavorActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.UserSetActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.UserSetMsgActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.UserSetPasswdActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.UserSetFeedbackActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.UserSetAboutActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name="com.asktun.mg.activity.GroupSettingActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.GroupActiveDetailActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.GroupMemberActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.asktun.mg.activity.FilterNearActivity"
+            android:configChanges="keyboard|orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+    </application>
+
+</manifest>

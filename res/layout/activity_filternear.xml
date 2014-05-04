@@ -1,0 +1,292 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dip"
+            android:layout_marginTop="15dp"
+            android:text="想看到的用户"
+            android:textColor="@color/black_filter"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:id="@+id/rg_sex"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp"
+            android:checkedButton="@+id/rb_sex_1"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/rb_sex_1"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rb_left_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="全部"
+                android:textColor="@color/rb_sx_color"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/rb_sex_2"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rb_mid_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="男"
+                android:textColor="@color/rb_sx_color"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/rb_sex_3"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rb_right_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="女"
+                android:textColor="@color/rb_sx_color"
+                android:textSize="18sp" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dip"
+            android:layout_marginTop="15dp"
+            android:text="出现的时间"
+            android:textColor="@color/black_filter"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:id="@+id/rg_time"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp"
+            android:checkedButton="@+id/rb_time_1"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/rb_time_1"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rb_left_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="15分钟"
+                android:textColor="@color/rb_sx_color"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/rb_time_2"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rb_mid_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="1小时"
+                android:textColor="@color/rb_sx_color"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/rb_time_3"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rb_mid_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="1天"
+                android:textColor="@color/rb_sx_color"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/rb_time_4"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rb_right_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="3天"
+                android:textColor="@color/rb_sx_color"
+                android:textSize="18sp" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dip"
+            android:layout_marginTop="15dp"
+            android:text="精确筛选"
+            android:textColor="@color/black_filter"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/btn_age"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_sx_up_selector"
+                android:gravity="center_vertical"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp" >
+
+                <TextView
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dip"
+                    android:layout_weight="1"
+                    android:text="年龄"
+                    android:textColor="@color/gray"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/spinner_age"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:background="@null"
+                    android:clickable="false"
+                    android:gravity="right" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/right_arrow" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btn_job"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_sx_mid_selector"
+                android:gravity="center_vertical"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp" >
+
+                <TextView
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dip"
+                    android:layout_weight="1"
+                    android:text="职业"
+                    android:textColor="@color/gray"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/spinner_job"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:background="@null"
+                    android:clickable="false"
+                    android:gravity="right" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/right_arrow" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btn_xingzuo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_sx_mid_selector"
+                android:gravity="center_vertical"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp" >
+
+                <TextView
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dip"
+                    android:layout_weight="1"
+                    android:text="星座"
+                    android:textColor="@color/gray"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/spinner_xingzuo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:background="@null"
+                    android:clickable="false"
+                    android:gravity="right" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/right_arrow" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_game"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_sx_down_selector"
+                android:gravity="center_vertical"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp" >
+
+                <TextView
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dip"
+                    android:layout_weight="1"
+                    android:text="游戏"
+                    android:textColor="@color/gray"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_game"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:text="不限"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/right_arrow" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

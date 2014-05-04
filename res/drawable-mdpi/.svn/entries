@@ -1,0 +1,29 @@
+8
+
+dir
+930
+svn://192.168.0.115/wwt_android/MobileGame/res/drawable-mdpi
+svn://192.168.0.115/wwt_android
+
+
+
+2013-11-26T01:17:14.824875Z
+376
+ch_chui
+
+
+svn:special svn:externals svn:needs-lock
+
+ic_launcher.png
+file
+
+
+
+
+2013-11-19T02:39:36.490075Z
+66833cd53180d3d04ba2a4f319510d41
+2013-11-26T01:17:14.824875Z
+376
+ch_chui
+has-props
+

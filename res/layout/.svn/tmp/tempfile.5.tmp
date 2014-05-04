@@ -1,0 +1,210 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="0px"
+        android:layout_weight="1" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/user_set_msg"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/listview_selector"
+                android:orientation="horizontal"
+                android:padding="10dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+<<<<<<< .mine
+                    android:layout_marginLeft="20dp"
+                    android:text="声音设置"
+                    android:textSize="16sp" />
+=======
+                    android:layout_marginLeft="10dp"
+                    android:textSize="18sp" />
+>>>>>>> .r862
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+<<<<<<< .mine
+                    android:layout_height="fill_parent"
+                    android:layout_marginRight="20dp" >
+=======
+                    android:layout_height="fill_parent" 
+                    android:layout_marginRight="10dp"
+                    >
+>>>>>>> .r862
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/right_arrow" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/line"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@drawable/line" />
+
+            <LinearLayout
+                android:id="@+id/user_set_passwd"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/listview_selector"
+                android:orientation="horizontal"
+                android:padding="10dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+<<<<<<< .mine
+                    android:layout_marginLeft="20dp"
+                    android:text="密码设置"
+                    android:textSize="16sp" />
+=======
+                    android:layout_marginLeft="10dp"
+                    android:textSize="18sp" />
+>>>>>>> .r862
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+<<<<<<< .mine
+                    android:layout_height="fill_parent"
+                    android:layout_marginRight="20dp" >
+=======
+                    android:layout_height="fill_parent" 
+                    android:layout_marginRight="10dp"
+                    >
+>>>>>>> .r862
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/right_arrow" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/line"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@drawable/line" />
+
+            <LinearLayout
+                android:id="@+id/user_set_feedback"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/listview_selector"
+                android:orientation="horizontal"
+                android:padding="10dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+<<<<<<< .mine
+                    android:layout_marginLeft="20dp"
+                    android:text="意见反馈"
+                    android:textSize="16sp" />
+=======
+                    android:layout_marginLeft="10dp"
+                    android:textSize="18sp" />
+>>>>>>> .r862
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+<<<<<<< .mine
+                    android:layout_height="fill_parent"
+                    android:layout_marginRight="20dp" >
+=======
+                    android:layout_height="fill_parent" 
+                    android:layout_marginRight="10dp"
+                    >
+>>>>>>> .r862
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/right_arrow" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/line"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@drawable/line" />
+
+            <LinearLayout
+                android:id="@+id/user_set_about"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/listview_selector"
+                android:orientation="horizontal"
+                android:padding="10dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+<<<<<<< .mine
+                    android:layout_marginLeft="20dp"
+                    android:text="关于"
+                    android:textSize="16sp" />
+=======
+                    android:layout_marginLeft="10dp"
+                    android:textSize="18sp" />
+>>>>>>> .r862
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+<<<<<<< .mine
+                    android:layout_height="fill_parent"
+                    android:layout_marginRight="20dp" >
+=======
+                    android:layout_height="fill_parent" 
+                    android:layout_marginRight="10dp"
+                    >
+>>>>>>> .r862
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/right_arrow" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/line"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@drawable/line" />
+        </LinearLayout>
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/user_close"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/logout_btn_selector" />
+
+</LinearLayout>

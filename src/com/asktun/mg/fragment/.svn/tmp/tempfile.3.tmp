@@ -1,0 +1,390 @@
+package com.asktun.mg.fragment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import net.tsz.afinal.FinalActivity;
+import net.tsz.afinal.annotation.view.ViewInject;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.asktun.mg.BaseFragment;
+import com.asktun.mg.R;
+import com.asktun.mg.UIDataProcess;
+import com.asktun.mg.activity.GameDetailActivity;
+import com.asktun.mg.activity.NearPersonActivity;
+import com.asktun.mg.bean.GamesDetailBean;
+import com.asktun.mg.bean.GamesDetailBean.FriendData;
+import com.asktun.mg.bean.GamesDetailBean.GameDetail;
+import com.asktun.mg.bean.GamesDetailBean.OtherData;
+import com.asktun.mg.ecogallery.EcoGallery;
+import com.asktun.mg.view.StarLayout;
+import com.chen.jmvc.util.IResponseListener;
+import com.chen.jmvc.util.StrUtil;
+
+/**
+ * 游戏详情
+ * 
+ * @Description
+ * @author Dean
+ * 
+ */
+public class GameDetailFragment extends BaseFragment {
+
+	private View view;
+	@ViewInject(id = R.id.frag_game_detail_gridview)
+	private GridView gridView;
+	@ViewInject(id = R.id.frag_game_detail_gridview2)
+	private GridView gridView2;
+	@ViewInject(id = R.id.frag_game_detail_gallery)
+	private EcoGallery gallery;
+	@ViewInject(id = R.id.frag_game_detail_image)
+	private ImageView img;
+	@ViewInject(id = R.id.frag_game_detail_starLayout)
+	private StarLayout starLayout;
+	@ViewInject(id = R.id.frag_game_detail_gametype)
+	private TextView typeTV;
+	@ViewInject(id = R.id.frag_game_detail_size)
+	private TextView sizeTV;
+	@ViewInject(id = R.id.frag_game_detail_time)
+	private TextView tiemTV;
+	@ViewInject(id = R.id.frag_game_detail_downloadCount)
+	private TextView downCountTV;
+	@ViewInject(id = R.id.frag_game_detail_award)
+	private TextView bonusTV;
+	@ViewInject(id = R.id.frag_game_detail_describe)
+	private TextView desTV;
+
+	private FriendAdapter friendAdapter;
+	private OtherAdapter otherAdapter;
+	private ImageAdapter adapter_gallery;
+
+	private int cHeight;
+
+	private String gameId = null;
+
+	private GameDetail gameDetail;
+	private List<FriendData> fList = new ArrayList<FriendData>();
+	private List<OtherData> oList = new ArrayList<OtherData>();
+
+	private String[] introImgUrl = null;
+
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		super.onAttach(activity);
+		gameId = ((GameDetailActivity) activity).getGameId();
+		System.out.println("game detail fragment````game Id" + gameId);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		if (view == null) {
+			view = mInflater.inflate(R.layout.fragment_game_detail, null);
+			FinalActivity.initInjectedView(this, view);
+			init();
+		} else {
+			((ViewGroup) view.getParent()).removeView(view);
+		}
+		return view;
+	}
+
+	private void init() {
+		getGameInfo();
+		friendAdapter = new FriendAdapter();
+		otherAdapter = new OtherAdapter();
+		adapter_gallery = new ImageAdapter();
+	}
+
+	private void setData() {
+		// imageLoader.displayImage(gameDetail.get, img);
+		if (!"null".equals(gameDetail.getScore())
+				&& !StrUtil.isEmpty(gameDetail.getScore()))
+			starLayout.setCount(Integer.parseInt(gameDetail.getScore()));
+		if (("1").equals(gameDetail.getIsonline())) {
+			typeTV.setText("网络游戏");
+		} else if (("2").equals(gameDetail.getIsonline())) {
+			typeTV.setText("单机游戏");
+		}
+		sizeTV.setText(Double.parseDouble(gameDetail.getSize()) / 1024 + "M");
+		tiemTV.setText(gameDetail.getAdd_time());
+		downCountTV.setText("下载次数:" + gameDetail.getDown_times());
+		bonusTV.setText("下载奖励：" + gameDetail.getPoint() + "积分");
+		desTV.setText(gameDetail.getDescription());
+
+		String imgDir = gameDetail.getImg_dir();
+		introImgUrl = imgDir.split(",");
+
+	}
+
+	private void setAdapterData() {
+		int cWidth = (diaplayWidth - 40) / 6;
+		cHeight = cWidth;
+		if (fList != null) {
+			int ii = fList.size();
+			LayoutParams params = new LayoutParams(ii * (cWidth + 20),
+					android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+			gridView.setLayoutParams(params);
+			gridView.setColumnWidth(cWidth);
+			gridView.setHorizontalSpacing(20);
+			gridView.setStretchMode(GridView.NO_STRETCH);
+			gridView.setNumColumns(ii);
+			gridView.setAdapter(friendAdapter);
+		}
+		if (oList != null) {
+			int ii2 = oList.size();
+			LayoutParams params2 = new LayoutParams(ii2 * (cWidth + 20),
+					android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+			gridView2.setLayoutParams(params2);
+			gridView2.setColumnWidth(cWidth);
+			gridView2.setHorizontalSpacing(20);
+			gridView2.setStretchMode(GridView.NO_STRETCH);
+			gridView2.setNumColumns(ii2);
+			gridView2.setAdapter(otherAdapter);
+		}
+
+		gallery.setAdapter(adapter_gallery);
+		if (adapter_gallery.getCount() > 1)
+			gallery.setSelection(1);
+
+	}
+
+	private class FriendAdapter extends BaseAdapter {
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return fList.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			// TODO Auto-generated method stub
+			return fList.get(arg0);
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			// TODO Auto-generated method stub
+			return arg0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			ViewHolder holder;
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater.inflate(R.layout.item_nearplay, null,
+						false);
+				holder.iv = (ImageView) convertView.findViewById(R.id.image);
+				holder.tv_name = (TextView) convertView
+						.findViewById(R.id.tv_name);
+				LayoutParams param = new LayoutParams(
+						android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+						cHeight);
+				holder.iv.setLayoutParams(param);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			final FriendData fd = fList.get(position);
+			if (fd != null) {
+				imageLoader.displayImage(fd.getUser_ico(), holder.iv);
+				holder.tv_name.setText(fd.getUser_name());
+				holder.iv.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(act,
+								NearPersonActivity.class);
+						intent.putExtra("isFriend", true);
+						intent.putExtra("userId", fd.getUser_id());
+						startActivity(intent);
+					}
+				});
+			}
+			return convertView;
+		}
+
+		private class ViewHolder {
+			ImageView iv;
+			TextView tv_name;
+		}
+	}
+
+	private class OtherAdapter extends BaseAdapter {
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return oList.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			// TODO Auto-generated method stub
+			return oList.get(arg0);
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			// TODO Auto-generated method stub
+			return arg0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			ViewHolder holder;
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater.inflate(R.layout.item_nearplay, null,
+						false);
+				holder.iv = (ImageView) convertView.findViewById(R.id.image);
+				holder.tv_name = (TextView) convertView
+						.findViewById(R.id.tv_name);
+				holder.tv_score = (TextView) convertView
+						.findViewById(R.id.score);
+				LayoutParams param = new LayoutParams(
+						android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+						cHeight);
+				holder.iv.setLayoutParams(param);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			OtherData od = oList.get(position);
+			if (od != null) {
+				imageLoader.displayImage(od.getGame_ico(), holder.iv);
+				holder.tv_name.setText(od.getGame_name());
+				// holder.tv_score.setVisibility(View.VISIBLE);
+				holder.iv.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(act,
+								GameDetailActivity.class);
+						intent.putExtra("gameId", "6");
+						startActivity(intent);
+					}
+				});
+			}
+			return convertView;
+		}
+
+		private class ViewHolder {
+			ImageView iv;
+			TextView tv_name;
+			TextView tv_score;
+		}
+	}
+
+	private class ImageAdapter extends BaseAdapter {
+
+		public int getCount() {
+			return introImgUrl.length;
+		}
+
+		private int width;
+		private int height;
+
+		public ImageAdapter() {
+			// TODO Auto-generated constructor stub
+			width = (diaplayWidth - 20) / 3;
+			height = width * 4 / 3;
+		}
+
+		public Object getItem(int position) {
+			return position;
+		}
+
+		public long getItemId(int position) {
+			return position;
+		}
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ImageView imageView = new ImageView(act);
+			EcoGallery.LayoutParams param = new EcoGallery.LayoutParams(width,
+					height);
+			imageView.setLayoutParams(param);
+			imageView.setScaleType(ScaleType.CENTER_CROP);
+			if (introImgUrl != null && position < introImgUrl.length) {
+				imageLoader.displayImage(introImgUrl[position], imageView,
+						options_game);
+			}
+			return imageView;
+		}
+	}
+
+	private void getGameInfo() {
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		// params.put("game_id", gameId);
+		params.put("game_id", "6");
+		params.put("user_id", mApplication.getLoginbean().user_id);
+		params.put("token", mApplication.getLoginbean().token);
+		UIDataProcess.reqData(GamesDetailBean.class, params, null,
+				new IResponseListener() {
+
+					@Override
+					public void onSuccess(Object arg0) {
+						// TODO Auto-generated method stub
+						GamesDetailBean data = (GamesDetailBean) arg0;
+						if (data != null) {
+							if (data.getFlg() == 1) {
+								gameDetail = data.getData();
+								fList = data.getFriendData();
+								oList = data.getOtherData();
+								setData();
+								friendAdapter.notifyDataSetChanged();
+								otherAdapter.notifyDataSetChanged();
+								adapter_gallery.notifyDataSetChanged();
+								setAdapterData();
+							} else {
+								showToast("获取数据失败");
+							}
+						} else {
+							showToast("获取数据失败");
+						}
+					}
+
+					@Override
+					public void onRuning(Object arg0) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onReqStart() {
+						// TODO Auto-generated method stub
+						showProgressDialog();
+					}
+
+					@Override
+					public void onFinish() {
+						// TODO Auto-generated method stub
+						removeProgressDialog();
+					}
+
+					@Override
+					public void onFailure(Object arg0) {
+						// TODO Auto-generated method stub
+						showToast("获取数据失败");
+					}
+				});
+	}
+
+}

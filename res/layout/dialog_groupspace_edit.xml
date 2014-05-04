@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_choose_top"
+        android:gravity="center"
+        android:text="成员管理"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_choose_line" />
+
+    <LinearLayout
+        android:id="@+id/dialog_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btn_dialog1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dip"
+            android:layout_marginRight="15dip"
+            android:layout_marginTop="15dip"
+            android:background="@drawable/btn_style_alert_dialog_button"
+            android:text="置顶"
+            android:textColor="@color/btn_g2w_color"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btn_dialog2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dip"
+            android:layout_marginRight="15dip"
+            android:layout_marginTop="15dip"
+            android:background="@drawable/btn_style_alert_dialog_button"
+            android:text="删除"
+            android:textColor="@color/btn_g2w_color"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btn_dialog3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="15dip"
+            android:layout_marginRight="15dip"
+            android:layout_marginTop="15dip"
+            android:background="@drawable/btn_style_alert_dialog_button"
+            android:text="查看"
+            android:textColor="@color/btn_g2w_color"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_bottom_cancel_selector"
+        android:text="取消"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+</LinearLayout>

@@ -1,0 +1,40 @@
+8
+
+dir
+930
+svn://192.168.0.115/wwt_android/MobileGame/src/com/asktun/mg/mp3
+svn://192.168.0.115/wwt_android
+
+
+
+2013-11-26T01:17:14.824875Z
+376
+ch_chui
+
+
+svn:special svn:externals svn:needs-lock
+
+RecMicToMp3.java
+file
+
+
+
+
+2013-11-22T02:34:19.925295Z
+499421f06373b0fdc1e87479c4a012c4
+2013-11-26T01:17:14.824875Z
+376
+ch_chui
+
+SimpleLame.java
+file
+
+
+
+
+2013-11-22T02:34:28.490785Z
+95354134223090604658f49548f7225d
+2013-11-26T01:17:14.824875Z
+376
+ch_chui
+

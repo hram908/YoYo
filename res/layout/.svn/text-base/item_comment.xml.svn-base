@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp" >
+
+    <LinearLayout
+        android:id="@+id/item_comment_rl"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:tag="front" >
+
+        <ImageView
+            android:id="@+id/item_comment_icon"
+            android:layout_width="30.0dip"
+            android:layout_height="30.0dip"
+            android:scaleType="fitXY" />
+
+        <TextView
+            android:id="@+id/item_comment_name"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10.0dip"
+            android:layout_marginRight="10.0dip"
+            android:layout_weight="1"
+            android:duplicateParentState="true"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="16.0sp" />
+
+        <TextView
+            android:id="@+id/item_comment_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:textColor="@color/gray" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/item_comment_tv"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_gridview"
+        android:padding="5dp"
+        android:textColor="@color/black_filter"
+        android:textSize="16sp" />
+
+</LinearLayout>

@@ -1,0 +1,772 @@
+package com.asktun.mg;
+
+import java.util.Calendar;
+
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.FragmentActivity;
+import android.text.TextPaint;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.asktun.mg.download.ContentValue;
+import com.asktun.mg.wheel.AbWheelUtil;
+import com.asktun.mg.wheel.AbWheelView;
+import com.chen.jmvc.util.Constant;
+import com.chen.jmvc.util.StrUtil;
+import com.chen.jmvc.util.ViewUtil;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
+@SuppressLint("HandlerLeak")
+public abstract class BaseActivity extends FragmentActivity implements ContentValue{
+
+	protected MyApp mApplication;
+
+	public String mProgressMessage = "Loading...";
+
+	public LayoutInflater mInflater;
+
+	public android.app.ProgressDialog mProgressDialog;
+
+	private Dialog mBottomDialog;
+
+	private Dialog mCenterDialog;
+
+	private View mBottomDialogView = null;
+
+	private View mCenterDialogView = null;
+
+	public SharedPreferences abSharedPreferences = null;
+
+	public LinearLayout.LayoutParams layoutParamsFF = null;
+
+	public LinearLayout.LayoutParams layoutParamsFW = null;
+
+	public LinearLayout.LayoutParams layoutParamsWF = null;
+
+	public LinearLayout.LayoutParams layoutParamsWW = null;
+
+	protected ImageView logoView = null;
+
+	protected ImageView logoLineView = null;
+
+	public RelativeLayout ab_base = null;
+
+	protected LinearLayout titleLayout = null;
+
+	protected LinearLayout titleTextLayout = null;
+
+	private LinearLayout.LayoutParams titleTextLayoutParams = null;
+
+	private LinearLayout.LayoutParams rightViewLayoutParams = null;
+
+	private static final int titleLayoutID = 1;
+
+	protected RelativeLayout contentLayout = null;
+
+	protected Button titleTextBtn = null;
+
+	protected LinearLayout rightLayout = null;
+
+	public int diaplayWidth = 320;
+
+	public int diaplayHeight = 480;
+
+	// private boolean mMonitorOpened = false;
+	//
+	// private Handler mMonitorHandler = new Handler();
+	//
+	// private Runnable mMonitorRunnable = null;
+
+	private WindowManager mWindowManager = null;
+
+	private WindowManager.LayoutParams mMonitorParams = null;
+
+	private Handler baseHandler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case Constant.SHOW_TOAST:
+				showToast(msg.getData().getString("Msg"));
+				break;
+			case Constant.SHOW_PROGRESS:
+				showProgressDialog(mProgressMessage);
+				break;
+			case Constant.REMOVE_PROGRESS:
+				removeProgressDialog();
+				break;
+			case Constant.REMOVE_DIALOGBOTTOM:
+				removeDialog(Constant.DIALOGBOTTOM);
+			case Constant.REMOVE_DIALOGCENTER:
+				removeDialog(Constant.DIALOGCENTER);
+			default:
+				break;
+			}
+		}
+	};
+	private LinearLayout leftLayout;
+
+	protected ImageLoader imageLoader = ImageLoader.getInstance();
+
+	protected DisplayImageOptions options;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		super.onCreate(savedInstanceState);
+		mInflater = LayoutInflater.from(this);
+		mWindowManager = getWindowManager();
+		Display display = mWindowManager.getDefaultDisplay();
+		diaplayWidth = display.getWidth();
+		diaplayHeight = display.getHeight();
+		mApplication = (MyApp) getApplication();
+		options = new DisplayImageOptions.Builder()
+				.showImageOnLoading(R.drawable.image_no)
+				.showImageForEmptyUri(R.drawable.image_no)
+				.showImageOnFail(R.drawable.image_no).cacheInMemory(true)
+				.cacheOnDisc(true).displayer(new RoundedBitmapDisplayer(20))
+				.build();
+	}
+
+	public void initActionBar() {
+		layoutParamsFF = new LinearLayout.LayoutParams(
+				android.view.ViewGroup.LayoutParams.FILL_PARENT,
+				android.view.ViewGroup.LayoutParams.FILL_PARENT);
+		layoutParamsFW = new LinearLayout.LayoutParams(
+				android.view.ViewGroup.LayoutParams.FILL_PARENT,
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+		layoutParamsWF = new LinearLayout.LayoutParams(
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+				android.view.ViewGroup.LayoutParams.FILL_PARENT);
+		layoutParamsWW = new LinearLayout.LayoutParams(
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+		titleTextLayoutParams = new LinearLayout.LayoutParams(
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+		titleTextLayoutParams.gravity = Gravity.CENTER_VERTICAL;
+		rightViewLayoutParams = new LinearLayout.LayoutParams(
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+		rightViewLayoutParams.gravity = Gravity.CENTER_VERTICAL;
+		ab_base = new RelativeLayout(this);
+		ab_base.setClickable(true);
+		ab_base.setBackgroundColor(Color.rgb(0, 0, 0));
+
+		titleLayout = new LinearLayout(this);
+		titleLayout.setMinimumHeight(getResources().getDimensionPixelSize(
+				R.dimen.icon_img));
+		titleLayout.setId(titleLayoutID);
+		titleLayout.setOrientation(LinearLayout.HORIZONTAL);
+		titleLayout.setGravity(Gravity.CENTER_VERTICAL);
+		titleLayout.setPadding(0, 0, 0, 0);
+
+		contentLayout = new RelativeLayout(this);
+		contentLayout.setPadding(0, 0, 0, 0);
+
+		titleTextLayout = new LinearLayout(this);
+		titleTextLayout.setOrientation(LinearLayout.HORIZONTAL);
+		titleTextLayout.setGravity(Gravity.CENTER_VERTICAL);
+		titleTextLayout.setPadding(0, 0, 0, 0);
+
+		titleTextBtn = new Button(this);
+		titleTextBtn.setTextColor(Color.rgb(255, 255, 255));
+		titleTextBtn.setTextSize(20);
+		titleTextBtn.setPadding(5, 0, 5, 0);
+		titleTextBtn.setGravity(Gravity.CENTER_VERTICAL);
+		titleTextBtn.setShadowLayer(5, 3, 3,
+				getResources().getColor(android.R.color.darker_gray));
+		titleTextBtn.setBackgroundDrawable(null);
+		titleTextLayout.addView(titleTextBtn, layoutParamsWF);
+
+		// 加左边的按钮
+		leftLayout = new LinearLayout(this);
+		leftLayout.setOrientation(LinearLayout.HORIZONTAL);
+		leftLayout.setGravity(Gravity.LEFT);
+		leftLayout.setPadding(0, 0, 0, 0);
+		leftLayout.setHorizontalGravity(Gravity.LEFT);
+		leftLayout.setGravity(Gravity.CENTER_VERTICAL);
+		leftLayout.setVisibility(View.GONE);
+		titleLayout.addView(leftLayout, rightViewLayoutParams);
+
+		logoView = new ImageView(this);
+		logoView.setVisibility(View.GONE);
+		logoLineView = new ImageView(this);
+		logoLineView.setVisibility(View.GONE);
+
+		layoutParamsWW.leftMargin = 15;
+		titleLayout.addView(logoView, layoutParamsWW);
+		titleLayout.addView(logoLineView, layoutParamsWW);
+		titleLayout.addView(titleTextLayout, titleTextLayoutParams);
+
+		Intent intent = this.getIntent();
+		int titleTransparentFlag = intent.getIntExtra(
+				Constant.TITLE_TRANSPARENT_FLAG, Constant.TITLE_NOTRANSPARENT);
+
+		if (titleTransparentFlag == Constant.TITLE_TRANSPARENT) {
+			ab_base.addView(contentLayout, layoutParamsFW);
+			RelativeLayout.LayoutParams layoutParamsFW2 = new RelativeLayout.LayoutParams(
+					ViewGroup.LayoutParams.FILL_PARENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT);
+			layoutParamsFW2.addRule(RelativeLayout.ALIGN_PARENT_TOP,
+					RelativeLayout.TRUE);
+			ab_base.addView(titleLayout, layoutParamsFW2);
+		} else {
+			ab_base.addView(titleLayout, layoutParamsFW);
+			RelativeLayout.LayoutParams layoutParamsFW1 = new RelativeLayout.LayoutParams(
+					ViewGroup.LayoutParams.FILL_PARENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT);
+			layoutParamsFW1.addRule(RelativeLayout.BELOW, titleLayoutID);
+			ab_base.addView(contentLayout, layoutParamsFW1);
+		}
+
+		rightLayout = new LinearLayout(this);
+		rightLayout.setOrientation(LinearLayout.HORIZONTAL);
+		rightLayout.setGravity(Gravity.RIGHT);
+		rightLayout.setPadding(0, 0, 0, 0);
+		rightLayout.setHorizontalGravity(Gravity.RIGHT);
+		rightLayout.setGravity(Gravity.CENTER_VERTICAL);
+		rightLayout.setVisibility(View.GONE);
+		titleLayout.addView(rightLayout, rightViewLayoutParams);
+
+		abSharedPreferences = getSharedPreferences(Constant.SHAREPATH,
+				Context.MODE_PRIVATE);
+
+		logoView.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+
+		mMonitorParams = new WindowManager.LayoutParams();
+		mMonitorParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+		mMonitorParams.format = PixelFormat.RGBA_8888;
+		mMonitorParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+				| WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+		mMonitorParams.width = 60;
+		mMonitorParams.height = 30;
+		setContentView(ab_base, layoutParamsFF);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (ab_base != null)
+			loadDefaultStyle();
+	}
+
+	public void loadDefaultStyle() {
+		this.setTitleLayoutBackground(R.drawable.top_bg_1);
+		this.setTitleTextColor(getResources().getColor(R.color.black));
+		this.setTitleLayoutGravity(Gravity.CENTER, Gravity.CENTER);
+
+	}
+
+	public void showToast(final String text) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				Toast.makeText(BaseActivity.this, "" + text, Toast.LENGTH_SHORT)
+						.show();
+			}
+		});
+
+	}
+
+	public void showToast(int resId) {
+		Toast.makeText(this, "" + this.getResources().getText(resId),
+				Toast.LENGTH_SHORT).show();
+	}
+
+	public void setTitleText(String text) {
+		titleTextBtn.setText(text);
+	}
+
+	public void setTitleText(int resId) {
+		titleTextBtn.setText(resId);
+	}
+
+	/**
+	 * 标题添加自定义布局view
+	 * 
+	 * @param resId
+	 */
+	public void setTitleView(int resId) {
+		titleTextLayout.addView(mInflater.inflate(resId, null), layoutParamsWF);
+	}
+
+	/**
+	 * 标题添加自定义图片view
+	 * 
+	 * @param resId
+	 */
+	public void setTitleImageView(int resId) {
+		ImageView img = new ImageView(this);
+		img.setImageResource(resId);
+		titleTextLayout.addView(img, layoutParamsWF);
+	}
+
+	public void setLogo(Drawable drawable) {
+		logoView.setVisibility(View.VISIBLE);
+		logoView.setBackgroundDrawable(drawable);
+	}
+
+	public void setLogo(int resId) {
+		logoView.setVisibility(View.VISIBLE);
+		logoView.setBackgroundResource(resId);
+	}
+
+	public void setLogoLine(int resId) {
+		logoLineView.setVisibility(View.VISIBLE);
+		logoLineView.setBackgroundResource(resId);
+	}
+
+	public void setLogoLine(Drawable drawable) {
+		logoLineView.setVisibility(View.VISIBLE);
+		logoLineView.setBackgroundDrawable(drawable);
+	}
+
+	public void setTitleTextColor(int color) {
+		titleTextBtn.setTextColor(color);
+	}
+
+	public void addRightView(View rightView) {
+		rightLayout.setVisibility(View.VISIBLE);
+		rightLayout.addView(rightView, layoutParamsWF);
+	}
+
+	public View addRightButtonView(int resId) {
+		rightLayout.setVisibility(View.VISIBLE);
+		ImageView btn = new ImageView(this);
+		btn.setBackgroundResource(resId);
+		layoutParamsWF.rightMargin = 15;
+		rightLayout.addView(btn, layoutParamsWF);
+		return btn;
+	}
+
+	public void addRightTextView(String text) {
+		TextView tv_index = new TextView(this);
+		tv_index.setTextColor(getResources().getColor(R.color.white));
+		tv_index.setTextSize(22);
+		tv_index.setText(text);
+		layoutParamsWF.rightMargin = 15;
+		addRightView(tv_index);
+	}
+
+	public ImageView addImgRightView(int imgdrawable) {
+		ImageView iv = new ImageView(this);
+		iv.setBackgroundResource(imgdrawable);
+		rightLayout.setVisibility(View.VISIBLE);
+		rightLayout.addView(iv, layoutParamsWF);
+		return iv;
+	}
+
+	public void addLeftView(View leftView) {
+		leftLayout.setVisibility(View.VISIBLE);
+		leftLayout.addView(leftView, layoutParamsWF);
+	}
+
+	public void clearLeftView() {
+		leftLayout.removeAllViews();
+	}
+
+	public void addRightView(int resId) {
+		rightLayout.setVisibility(View.VISIBLE);
+		rightLayout.addView(mInflater.inflate(resId, null), layoutParamsWF);
+	}
+
+	public void clearRightView() {
+		rightLayout.removeAllViews();
+	}
+
+	public void setAbContentView(View contentView) {
+		contentLayout.removeAllViews();
+		contentLayout.addView(contentView, layoutParamsFF);
+	}
+
+	public void setAbContentView(int resId) {
+		contentLayout.removeAllViews();
+		contentLayout.addView(mInflater.inflate(resId, null), layoutParamsFF);
+	}
+
+	public void setLogoBackOnClickListener(View.OnClickListener mOnClickListener) {
+		logoView.setOnClickListener(mOnClickListener);
+	}
+
+	public void showToastInThread(int resId) {
+		Message msg = baseHandler.obtainMessage(0);
+		Bundle bundle = new Bundle();
+		bundle.putString("Msg", this.getResources().getString(resId));
+		msg.setData(bundle);
+		baseHandler.sendMessage(msg);
+	}
+
+	public void showToastInThread(String toast) {
+		Message msg = baseHandler.obtainMessage(0);
+		Bundle bundle = new Bundle();
+		bundle.putString("Msg", toast);
+		msg.setData(bundle);
+		baseHandler.sendMessage(msg);
+	}
+
+	public void showProgressDialog() {
+		showProgressDialog(null);
+	}
+
+	public void showProgressDialog(String message) {
+		if (!StrUtil.isEmpty(message)) {
+			mProgressMessage = message;
+		}
+
+		this.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				setProgressDialog();
+				showDialog(Constant.DIALOGPROGRESS);
+			}
+		});
+	}
+
+	public void setProgressDialog() {
+		if (mProgressDialog == null) {
+			if (getApplication() instanceof com.chen.jmvc.util.Application) {
+				mProgressDialog = ((com.chen.jmvc.util.Application) getApplication())
+						.getProgressDialog(this);
+			} else {
+				mProgressDialog = new android.app.ProgressDialog(
+						BaseActivity.this);
+			}
+			mProgressDialog.setMessage(mProgressMessage);
+		}
+	}
+
+	public void showDialog(int id, View view, int paddingWidth) {
+
+		if (id == Constant.DIALOGBOTTOM) {
+			mBottomDialogView = view;
+			if (mBottomDialog == null) {
+				mBottomDialog = new Dialog(this, R.style.bubble_dialog);
+				mBottomDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+				Window window = mBottomDialog.getWindow();
+				WindowManager.LayoutParams lp = window.getAttributes();
+				window.setGravity(Gravity.BOTTOM);
+				lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+				lp.height = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+				lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
+				window.setAttributes(lp);
+				// window.setWindowAnimations(R.style.AnimBottom);
+			}
+			mBottomDialog.setContentView(mBottomDialogView, new LayoutParams(
+					diaplayWidth - paddingWidth,
+					android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+			showDialog(id);
+		} else if (id == Constant.DIALOGCENTER) {
+			mCenterDialogView = view;
+			if (mCenterDialog == null) {
+				mCenterDialog = new Dialog(this, R.style.bubble_dialog);
+				mCenterDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+				Window window = mCenterDialog.getWindow();
+				WindowManager.LayoutParams lp = window.getAttributes();
+				window.setGravity(Gravity.CENTER);
+				lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+				lp.height = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+				lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
+				window.setAttributes(lp);
+				window.setWindowAnimations(android.R.style.Animation_Dialog);
+			}
+			mCenterDialog.setContentView(mCenterDialogView, new LayoutParams(
+					diaplayWidth - paddingWidth,
+					android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+			showDialog(id);
+		}
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog = null;
+		switch (id) {
+		case Constant.DIALOGPROGRESS:
+			setProgressDialog();
+			return mProgressDialog;
+		case Constant.DIALOGBOTTOM:
+			return mBottomDialog;
+		case Constant.DIALOGCENTER:
+			return mCenterDialog;
+		default:
+			break;
+		}
+		return dialog;
+	}
+
+	public void removeProgressDialog() {
+		removeDialog(Constant.DIALOGPROGRESS);
+	}
+
+	public void removeDialogInThread(int id) {
+		baseHandler.sendEmptyMessage(id);
+	}
+
+	public void dialogOpen(String title, String msg,
+			DialogInterface.OnClickListener mOkOnClickListener) {
+		AlertDialog.Builder builder = new Builder(this);
+		builder.setMessage(msg);
+		builder.setTitle(title);
+		builder.setPositiveButton("确定", mOkOnClickListener);
+		builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		builder.create().show();
+	}
+
+	public void dialogOpenNotCancel(String title, String msg,
+			DialogInterface.OnClickListener mOkOnClickListener) {
+		AlertDialog.Builder builder = new Builder(this);
+		builder.setMessage(msg);
+		builder.setTitle(title);
+		builder.setPositiveButton("确定", mOkOnClickListener);
+		builder.create().show();
+	}
+
+	public void dialogOpen(String title, String msg) {
+		AlertDialog.Builder builder = new Builder(this);
+		builder.setMessage(msg);
+		builder.setTitle(title);
+		builder.create().show();
+	}
+
+	public LinearLayout getTitleLayout() {
+		return titleLayout;
+	}
+
+	public void setTitleLayout(LinearLayout titleLayout) {
+		this.titleLayout = titleLayout;
+	}
+
+	public void setTitleLayoutBackground(int res) {
+		titleLayout.setBackgroundResource(res);
+	}
+
+	public void setTitleTextMargin(int left, int top, int right, int bottom) {
+		titleTextLayoutParams.setMargins(left, top, right, bottom);
+	}
+
+	public void setTitleLayoutBackgroundColor(int color) {
+		titleLayout.setBackgroundColor(color);
+	}
+
+	public void setTitleTextSize(int titleTextSize) {
+		this.titleTextBtn.setTextSize(titleTextSize);
+	}
+
+	public void setTitleLayoutGravity(int gravity1, int gravity2) {
+		ViewUtil.measureView(this.rightLayout);
+		ViewUtil.measureView(this.logoView);
+		ViewUtil.measureView(this.leftLayout);
+		int leftWidth = this.logoView.getMeasuredWidth()
+				+ this.leftLayout.getMeasuredWidth();
+		int rightWidth = this.rightLayout.getMeasuredWidth();
+		this.titleTextLayoutParams.rightMargin = 0;
+		this.titleTextLayoutParams.leftMargin = 0;
+		if ((gravity1 == Gravity.CENTER_HORIZONTAL || gravity1 == Gravity.CENTER)) {
+			if (leftWidth == 0 && rightWidth == 0) {
+				this.titleTextLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+			} else {
+				if (gravity2 == Gravity.RIGHT) {
+					if (rightWidth == 0) {
+					} else {
+						this.titleTextBtn.setPadding(rightWidth / 3 * 2, 0, 0,
+								0);
+					}
+					this.titleTextBtn.setGravity(Gravity.CENTER);
+					this.rightLayout.setHorizontalGravity(Gravity.RIGHT);
+				}
+				if (gravity2 == Gravity.CENTER
+						|| gravity2 == Gravity.CENTER_HORIZONTAL) {
+					this.titleTextLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+					this.rightLayout.setHorizontalGravity(Gravity.LEFT);
+					this.titleTextBtn.setGravity(Gravity.CENTER);
+					int offset = leftWidth - rightWidth;
+					if (offset > 0) {
+						this.titleTextLayoutParams.rightMargin = offset;
+					} else {
+						this.titleTextLayoutParams.leftMargin = Math
+								.abs(offset);
+					}
+				}
+			}
+		} else if (gravity1 == Gravity.LEFT && gravity2 == Gravity.RIGHT) {
+			this.titleTextLayout.setGravity(Gravity.LEFT);
+			this.rightLayout.setHorizontalGravity(Gravity.RIGHT);
+		} else if (gravity1 == Gravity.RIGHT && gravity2 == Gravity.RIGHT) {
+			this.titleTextLayout.setGravity(Gravity.RIGHT);
+			this.rightLayout.setHorizontalGravity(Gravity.RIGHT);
+		} else if (gravity1 == Gravity.LEFT && gravity2 == Gravity.LEFT) {
+			this.titleTextLayout.setGravity(Gravity.LEFT);
+			this.rightLayout.setHorizontalGravity(Gravity.LEFT);
+		}
+
+	}
+
+	public Button getTitleTextButton() {
+		return titleTextBtn;
+	}
+
+	public void setTitleTextBold(boolean bold) {
+		TextPaint paint = titleTextBtn.getPaint();
+		if (bold) {
+			paint.setFakeBoldText(true);
+		} else {
+			paint.setFakeBoldText(false);
+		}
+
+	}
+
+	public void setTitleTextBackgroundResource(int resId) {
+		titleTextBtn.setBackgroundResource(resId);
+	}
+
+	public void setTitleLayoutBackgroundDrawable(Drawable d) {
+		titleLayout.setBackgroundDrawable(d);
+	}
+
+	public void setTitleTextBackgroundDrawable(Drawable drawable) {
+		titleTextBtn.setBackgroundDrawable(drawable);
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
+	}
+
+	@Override
+	public void startActivity(Intent intent) {
+		super.startActivity(intent);
+		overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+	}
+
+	@Override
+	public void startActivityForResult(Intent intent, int requestCode) {
+		super.startActivityForResult(intent, requestCode);
+		overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+	}
+
+	@Override
+	public void finish() {
+		super.finish();
+		overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+	}
+
+	public void defaultFinish() {
+		super.finish();
+	}
+
+	public void defaultStartActivity(Intent intent) {
+		super.startActivity(intent);
+	}
+
+	/** 通过Class跳转界面 **/
+	protected void startActivity(Class<?> cls) {
+		startActivity(cls, null);
+	}
+
+	/** 含有Bundle通过Class跳转界面 **/
+	protected void startActivity(Class<?> cls, Bundle bundle) {
+		Intent intent = new Intent();
+		intent.setClass(this, cls);
+		if (bundle != null) {
+			intent.putExtras(bundle);
+		}
+		startActivity(intent);
+	}
+
+	/** 通过Action跳转界面 **/
+	protected void startActivity(String action) {
+		startActivity(action, null);
+	}
+
+	/** 含有Bundle通过Action跳转界面 **/
+	protected void startActivity(String action, Bundle bundle) {
+		Intent intent = new Intent();
+		intent.setAction(action);
+		if (bundle != null) {
+			intent.putExtras(bundle);
+		}
+		startActivity(intent);
+	}
+
+	public MyApp getMyApplication() {
+		return mApplication;
+	}
+
+	public void setApplication(MyApp application) {
+		this.mApplication = application;
+	}
+
+	/**
+	 * 年月日时间选择器
+	 * 
+	 * @param mDateView
+	 * @param mText
+	 */
+	public void initWheelDate(View mDateView, TextView mText) {
+
+		Calendar calendar = Calendar.getInstance();
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH) + 1;
+		int day = calendar.get(Calendar.DATE);
+		final AbWheelView mWheelViewY = (AbWheelView) mDateView
+				.findViewById(R.id.wheelView1);
+		final AbWheelView mWheelViewM = (AbWheelView) mDateView
+				.findViewById(R.id.wheelView2);
+		final AbWheelView mWheelViewD = (AbWheelView) mDateView
+				.findViewById(R.id.wheelView3);
+		Button okBtn = (Button) mDateView.findViewById(R.id.okBtn);
+		Button cancelBtn = (Button) mDateView.findViewById(R.id.cancelBtn);
+		mWheelViewY.setCenterSelectDrawable(this.getResources().getDrawable(
+				R.drawable.wheel_select));
+		mWheelViewM.setCenterSelectDrawable(this.getResources().getDrawable(
+				R.drawable.wheel_select));
+		mWheelViewD.setCenterSelectDrawable(this.getResources().getDrawable(
+				R.drawable.wheel_select));
+		AbWheelUtil.initWheelDatePicker(this, mText, mWheelViewY, mWheelViewM,
+				mWheelViewD, okBtn, cancelBtn, year, month, day, 1900, 180,
+				false);
+		mText.setText(year + "-" + month + "-" + day);
+	}
+
+}

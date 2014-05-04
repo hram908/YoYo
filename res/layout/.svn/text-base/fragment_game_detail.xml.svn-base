@@ -1,0 +1,250 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res/com.asktun.mg"
+    android:id="@+id/scrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:scrollbars="none" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/common_frame"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:padding="5dp" >
+
+            <ImageView
+                android:id="@+id/frag_game_detail_image"
+                android:layout_width="@dimen/game_height"
+                android:layout_height="@dimen/game_height"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitXY" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:orientation="vertical" >
+
+                <com.asktun.mg.view.StarLayout
+                    android:id="@+id/frag_game_detail_starLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:count="0" />
+
+                <TextView
+                    android:id="@+id/frag_game_detail_downloadCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" "
+                    android:textColor="@color/gray" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical" >
+
+                    <TextView
+                        android:id="@+id/frag_game_detail_gametype"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" "
+                        android:textColor="@color/gray" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="1dp"
+                        android:background="@color/backColor" />
+
+                    <TextView
+                        android:id="@+id/frag_game_detail_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="2dp"
+                        android:text=" "
+                        android:textColor="@color/gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical" >
+
+                    <TextView
+                        android:id="@+id/frag_game_detail_award"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="2dp"
+                        android:text=" "
+                        android:textColor="@color/gray" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <TextView
+                    android:id="@+id/frag_game_detail_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="2dp"
+                    android:text=" "
+                    android:textColor="@color/gray" />
+
+                <Button
+                    android:id="@+id/btn_download"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@id/frag_game_detail_size"
+                    android:background="@drawable/common_btn_selector"
+                    android:text="下载"
+                    android:textColor="@color/btn_text_color" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/common_frame"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="游戏介绍"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/frag_game_detail_describe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text=" "
+                android:textColor="@color/black" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:padding="8dp" >
+
+                <com.asktun.mg.ecogallery.EcoGallery
+                    android:id="@+id/frag_game_detail_gallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:spacing="5dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/common_frame"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:padding="8dp"
+                android:text="好友在玩"
+                android:textColor="@color/black" />
+
+            <HorizontalScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/bg_gridview"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:scrollbars="none" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" >
+
+                    <GridView
+                        android:id="@+id/frag_game_detail_gridview"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:cacheColorHint="@color/transparent"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:scrollbars="none" >
+                    </GridView>
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/common_frame"
+            android:padding="8dp"
+            android:text="用户评分"
+            android:textColor="@color/black"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/common_frame"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="下载这个游戏的还下载了"
+                android:textColor="@color/black" />
+
+            <HorizontalScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/bg_gridview"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:scrollbars="none" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" >
+
+                    <GridView
+                        android:id="@+id/frag_game_detail_gridview2"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:cacheColorHint="@color/transparent"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:scrollbars="none" >
+                    </GridView>
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

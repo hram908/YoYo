@@ -1,0 +1,64 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <RadioGroup
+        android:id="@+id/rgroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:checkedButton="@+id/rb_1"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/rb_1"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/radiobutton_tab_selector"
+            android:button="@null"
+            android:gravity="center"
+            android:text="游游下载"
+            android:textColor="@color/rb__color"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/rb_2"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/radiobutton_tab_selector"
+            android:button="@null"
+            android:gravity="center"
+            android:text="本地下载"
+            android:textColor="@color/rb__color"
+            android:textSize="18sp" />
+
+    </RadioGroup>
+    
+     <com.asktun.mg.view.XListView
+            android:id="@+id/my_download_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="@color/transparent"
+            android:listSelector="@color/transparent"
+            android:divider="@drawable/line"
+            android:dividerHeight="1dp"
+            android:scrollbars="none"
+            android:fadingEdge="none" />
+     
+     <com.asktun.mg.view.XListView
+            android:id="@+id/my_native_download_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="@color/transparent"
+            android:listSelector="@color/transparent"
+            android:divider="@drawable/line"
+            android:dividerHeight="1dp"
+            android:visibility="gone"
+            android:scrollbars="none"
+            android:fadingEdge="none" />
+    
+</LinearLayout>

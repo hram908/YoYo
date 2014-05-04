@@ -1,0 +1,170 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/listview_selector"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="5dp" >
+
+        <FrameLayout
+            android:id="@+id/fl_image"
+            android:layout_width="@dimen/img_width"
+            android:layout_height="@dimen/img_width" >
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="@dimen/img_width"
+                android:layout_height="@dimen/img_width"
+                android:contentDescription="@string/app_name"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:layout_width="@dimen/img_width"
+                android:layout_height="@dimen/img_width"
+                android:contentDescription="@string/app_name"
+                android:scaleType="fitXY"
+                android:duplicateParentState="true"
+                android:src="@drawable/icon01_selector" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_top"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/fl_image"
+            android:gravity="center_vertical" >
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="4"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/online"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="right"
+                android:singleLine="true"
+                android:textColor="@color/gray" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/line_middle" />
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:singleLine="true"
+                android:textColor="@color/gray" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/hsv"
+            android:layout_below="@+id/ll_top"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/fl_image"
+            android:gravity="center_vertical" >
+
+            <TextView
+                android:id="@+id/tv_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:background="@drawable/sex_nan"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/tv_purpose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:background="@drawable/icon_purpose1" />
+
+            <TextView
+                android:id="@+id/tv_sign"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:textColor="@color/gray" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/hsv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/fl_image"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/fl_image"
+            android:gravity="center_vertical"
+            android:visibility="visible" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="在玩:"
+                android:textColor="@color/gray"
+                android:visibility="visible" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:scrollbars="none"
+                android:visibility="visible" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <GridView
+                        android:id="@+id/gridview"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:cacheColorHint="@color/transparent"
+                        android:scrollbars="none" >
+                    </GridView>
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/line" />
+
+</LinearLayout>

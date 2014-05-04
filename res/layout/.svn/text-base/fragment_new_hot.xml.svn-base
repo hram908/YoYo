@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.asktun.mg.view.XListView
+        android:id="@+id/listview"
+        android:padding="5dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:cacheColorHint="@color/transparent"
+        android:divider="@drawable/line"
+        android:dividerHeight="1dp"
+        android:fadingEdge="none"
+        android:listSelector="@color/transparent"
+        android:scrollbars="none" />
+
+</LinearLayout>

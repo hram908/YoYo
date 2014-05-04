@@ -1,0 +1,793 @@
+package com.asktun.mg.fragment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import net.tsz.afinal.FinalActivity;
+import net.tsz.afinal.annotation.view.ViewInject;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
+
+import com.ab.util.AbFileUtil;
+import com.asktun.mg.BaseFragment;
+import com.asktun.mg.R;
+import com.asktun.mg.UIDataProcess;
+import com.asktun.mg.activity.DownloadManageActivity;
+import com.asktun.mg.activity.GameDetailActivity;
+import com.asktun.mg.activity.GameSortActivity;
+import com.asktun.mg.activity.NearGroupActivity;
+import com.asktun.mg.activity.SearchActivity;
+import com.asktun.mg.bean.GameInfo;
+import com.asktun.mg.bean.GameSortBean;
+import com.asktun.mg.bean.GetUpdateApk;
+import com.asktun.mg.bean.GameSortBean.SortInfo;
+import com.asktun.mg.bean.GamesNearBean;
+import com.asktun.mg.download.FinalDBChen;
+import com.asktun.mg.service.AConstDefine;
+import com.asktun.mg.service.ApkItem;
+import com.asktun.mg.service.DataManager;
+import com.asktun.mg.service.DownloadEntity;
+import com.asktun.mg.service.DownloadService;
+import com.asktun.mg.service.DownloadUtils;
+import com.asktun.mg.utils.Util;
+import com.asktun.mg.view.BadgeView;
+import com.asktun.mg.view.StarLayout;
+import com.asktun.mg.view.XListView;
+import com.asktun.mg.view.XListView.IXListViewListener;
+import com.chen.jmvc.util.IResponseListener;
+
+/**
+ * 游戏
+ * 
+ * @Description
+ * @author Dean
+ * 
+ */
+public class GameFragment extends BaseFragment implements IXListViewListener,
+		AConstDefine {
+	public static UserDownloadFragment downloadFragment;
+	public static List<GameInfo> updateList = new ArrayList<GameInfo>();
+
+	private View view;
+
+	@ViewInject(id = R.id.rgroup)
+	private RadioGroup rg;
+	@ViewInject(id = R.id.lv_1)
+	private XListView listView1;
+	@ViewInject(id = R.id.lv_2)
+	private XListView listView2;
+	@ViewInject(id = R.id.gridview)
+	private GridView gridView;
+
+	private int type;
+	private GameAdapter adapter1;
+	private GroupAdapter adapter2;
+	private SortAdapter adapter3;
+
+	private List<SortInfo> siList = new ArrayList<SortInfo>();
+	// private List<GameInfo> gameList = new ArrayList<GameInfo>();
+
+	private BadgeView badge;
+
+	private int[] totalDataCount = { 1, 1 };
+	private int[] Index = { 1, 1 };
+
+	private BroadcastReceiver mBadgeReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			int count = 0;
+			List<DownloadEntity> downloadList = DownloadService.mDownloadService
+					.getAllDownloadList();
+			for (int i = 0; i < downloadList.size(); i++) {
+				DownloadEntity entity = downloadList.get(i);
+				if (entity.downloadType == TYPE_OF_DOWNLOAD) {// 正在下载应用
+					count++;
+				}
+			}
+			System.out.println("``count= " + count);
+			if (count > 0) {
+				badge.setText(count + "");
+				badge.show();
+			} else {
+				badge.hide();
+			}
+			// adapter1.list = setApkStatus(adapter1.list);
+			// adapter1.notifyDataSetChanged();
+		}
+	};
+
+
+	private Button btn;
+
+	@Override
+	public void addChildView(ViewGroup contentLayout) {
+		// TODO Auto-generated method stub
+		super.addChildView(contentLayout);
+		view = mInflater.inflate(R.layout.fragment_game, null);
+		FinalActivity.initInjectedView(this, view);
+		contentLayout.addView(view, layoutParamsFF);
+		btn = new Button(act);
+		btn.setBackgroundResource(R.drawable.downloadmanage_btn_selector);
+		btn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(act, DownloadManageActivity.class));
+			}
+		});
+		addRightView(btn);
+
+		addRightButtonView(R.drawable.search_btn_selector).setOnClickListener(
+				new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						startActivity(new Intent(act, SearchActivity.class));
+					}
+				});
+		setTitleText("游戏");
+		badge = new BadgeView(act, btn);
+		init();
+		initBroadcast();
+		getGameSort();
+		getUpdateList();
+	}
+
+	private void init() {
+		db = new FinalDBChen(act, DBNAME, new GameInfo(), TABNAME_DOWNLOADTASK,
+				null);
+		rg.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				// TODO Auto-generated method stub
+				if (checkedId == R.id.rb_1) {
+					type = 0;
+					listView1.setVisibility(View.VISIBLE);
+					listView2.setVisibility(View.GONE);
+					gridView.setVisibility(View.GONE);
+				} else if (checkedId == R.id.rb_2) {
+					gridView.setVisibility(View.VISIBLE);
+					listView2.setVisibility(View.GONE);
+					listView1.setVisibility(View.GONE);
+				} else {
+					type = 1;
+					gridView.setVisibility(View.GONE);
+					listView2.setVisibility(View.VISIBLE);
+					listView1.setVisibility(View.GONE);
+				}
+			}
+		});
+
+		adapter1 = new GameAdapter();
+		adapter2 = new GroupAdapter();
+		adapter3 = new SortAdapter();
+		listView1.setAdapter(adapter1);
+		listView2.setAdapter(adapter2);
+		listView1.setPullLoadEnable(true);
+		listView1.setPullRefreshEnable(true);
+		listView1.setXListViewListener(this);
+		listView1.startPullRefresh();
+
+		listView2.setPullLoadEnable(false);
+		listView2.setPullRefreshEnable(false);
+		gridView.setAdapter(adapter3);
+
+		listView1.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+				GameInfo gi = adapter1.list.get(position - 1);
+				Intent intent = new Intent(act, GameDetailActivity.class);
+				intent.putExtra("gameId", gi.getGame_id());
+				intent.putExtra("gameName", gi.getGame_name());
+				intent.putExtra("gameInfo", gi);
+				startActivity(intent);
+			}
+		});
+
+		listView2.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				startActivity(new Intent(act, NearGroupActivity.class));
+			}
+		});
+
+		gridView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+				// TODO Auto-generated method stub
+				SortInfo si = siList.get(position);
+				Intent intent = new Intent(act, GameSortActivity.class);
+				intent.putExtra("sortTitle", si.getCate_name());
+				intent.putExtra("sortId", si.getCate_id());
+				startActivity(intent);
+			}
+		});
+	}
+
+	private void initBroadcast() {
+		// 注册广播
+		IntentFilter myIntentFilter = new IntentFilter();
+		myIntentFilter.addAction("mBadgeReceiver");
+		act.registerReceiver(mBadgeReceiver, myIntentFilter);
+
+		System.out.println("register download broadcast~~~~~~~");
+		// 注册广播
+		// IntentFilter mydownloadIntentFilter = new IntentFilter();
+		// mydownloadIntentFilter.addAction("download");
+		// act.registerReceiver(mDownloadBroadcastReceiver,
+		// mydownloadIntentFilter);
+	}
+
+	private class GameAdapter extends BaseAdapter {
+
+		private List<GameInfo> list = new ArrayList<GameInfo>();
+
+		public void add(List<GameInfo> o) {
+			list.addAll(o);
+		}
+
+		public void clear() {
+			list.clear();
+		}
+
+		@Override
+		public int getCount() {
+			return list.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			return list.get(arg0);
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			return arg0;
+		}
+
+		@Override
+		public View getView(final int position, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			ViewHolder holder;
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater.inflate(R.layout.item_gamelist, null,
+						false);
+				holder.iv = (ImageView) convertView.findViewById(R.id.image);
+				holder.tv_name = (TextView) convertView
+						.findViewById(R.id.tv_name);
+				holder.tv_gametype = (TextView) convertView
+						.findViewById(R.id.tv_gametype);
+				holder.tv_size = (TextView) convertView
+						.findViewById(R.id.tv_size);
+				holder.tv_playcount = (TextView) convertView
+						.findViewById(R.id.tv_playcount);
+				holder.starLayout = (StarLayout) convertView
+						.findViewById(R.id.starLayout);
+				holder.btn_download = (Button) convertView
+						.findViewById(R.id.btn_download);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			GameInfo gi = list.get(position);
+			imageLoader.displayImage(gi.getGame_ico(), holder.iv, options_round);
+			holder.tv_name.setText(gi.getGame_name());
+			holder.tv_gametype.setText(gi.getCate_name());
+			holder.tv_playcount.setText(gi.getUser_num() + "人在玩");
+			holder.tv_size.setText(gi.getSize() + "M");
+			holder.starLayout.setCount(Integer.parseInt(gi.getScore()));
+			final ApkItem apkItem = Util.GameInfoToAI(gi);
+			displayApkStatus(holder.btn_download, apkItem.status);
+			holder.btn_download.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+
+					if (apkItem.status == STATUS_APK_UNINSTALL
+							|| apkItem.status == STATUS_APK_UNUPDATE) {// 下载
+						DownloadUtils.checkDownload(act, apkItem);
+						// showToast(apkItem.appName + " 开始下载！");
+						list.get(position).setStatus(STATUS_APK_INSTALL);
+					} else {// 取消下载
+						Intent intent = new Intent(
+								AConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
+						DownloadEntity entity = new DownloadEntity(apkItem);
+						// if (entity.downloadType ==
+						// AConstDefine.TYPE_OF_DOWNLOAD) {
+						DownloadUtils.fillDownloadNotifycation(act, false);
+						// } else if (entity.downloadType ==
+						// AConstDefine.TYPE_OF_UPDATE) {
+						// DownloadUtils.fillUpdateAndUpdatingNotifycation(
+						// act, false);
+						// }
+						Bundle bundle = new Bundle();
+						bundle.putParcelable(AConstDefine.DOWNLOAD_ENTITY,
+								entity);
+						intent.putExtras(bundle);
+						act.sendBroadcast(intent);
+
+						list.get(position).setStatus(STATUS_APK_UNINSTALL);
+					}
+					notifyDataSetChanged();
+				}
+			});
+
+			return convertView;
+		}
+
+		private class ViewHolder {
+			ImageView iv;
+			TextView tv_name;
+			TextView tv_size;
+			TextView tv_gametype;
+			TextView tv_playcount;
+			StarLayout starLayout;
+			Button btn_download;
+		}
+
+	}
+
+	/**
+	 * 显示apk状态
+	 * 
+	 * @param mTextView
+	 * @param status
+	 */
+	protected void displayApkStatus(TextView mTextView, int status) {
+		switch (status) {
+		case STATUS_APK_UNINSTALL:
+			setvisibleInstallTextView(mTextView, true, R.string.install);
+			break;
+		case STATUS_APK_INSTALL:
+		case STATUS_APK_UPDATE:
+			setvisibleInstallTextView(mTextView, true, R.string.cancel);
+			break;
+		case STATUS_APK_INSTALL_DONE:
+			setvisibleInstallTextView(mTextView, false, R.string.has_installed);
+			break;
+		case STATUS_APK_UNUPDATE:
+			setvisibleInstallTextView(mTextView, true, R.string.update);
+			break;
+		}
+	}
+
+	private void setvisibleInstallTextView(TextView mTextView, boolean enable,
+			int rId) {
+		mTextView.setEnabled(enable);
+		mTextView.setText(rId);
+	}
+
+
+	private class GroupAdapter extends BaseAdapter {
+
+		// private List<ActiveListItem> list = new ArrayList<ActiveListItem>();
+		//
+		// public void add(ActiveListItem o) {
+		// list.add(o);
+		// }
+		//
+		// public void clear() {
+		// list.clear();
+		// }
+
+		@Override
+		public int getCount() {
+			return 12;
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			return null;
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			return 0;
+		}
+
+		@Override
+		public View getView(int arg0, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			ViewHolder holder;
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater.inflate(R.layout.item_neargroup, null,
+						false);
+				holder.iv = (ImageView) convertView.findViewById(R.id.image);
+				holder.tv_name = (TextView) convertView
+						.findViewById(R.id.tv_name);
+				holder.tv_count = (TextView) convertView
+						.findViewById(R.id.tv_count);
+				holder.tv_distance = (TextView) convertView
+						.findViewById(R.id.tv_distance);
+				holder.tv_descrip = (TextView) convertView
+						.findViewById(R.id.tv_descrip);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+
+			return convertView;
+		}
+
+		private class ViewHolder {
+			ImageView iv;
+			TextView tv_name;
+			TextView tv_count;
+			TextView tv_distance;
+			TextView tv_descrip;
+		}
+
+	}
+
+	private class SortAdapter extends BaseAdapter {
+
+		// private List<ActiveListItem> list = new ArrayList<ActiveListItem>();
+		//
+		// public void add(ActiveListItem o) {
+		// list.add(o);
+		// }
+		//
+		// public void clear() {
+		// list.clear();
+		// }
+
+		@Override
+		public int getCount() {
+			return siList.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			return siList.get(arg0);
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			return arg0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			ViewHolder holder;
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater.inflate(R.layout.item_gamesort, null,
+						false);
+				holder.iv = (ImageView) convertView.findViewById(R.id.image);
+				holder.tv_name = (TextView) convertView
+						.findViewById(R.id.tv_name);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			SortInfo si = siList.get(position);
+			if (si != null) {
+				imageLoader.displayImage(si.getCategory_img(), holder.iv,
+						options_round);
+				holder.tv_name.setText(si.getCate_name());
+			}
+
+			return convertView;
+		}
+
+		private class ViewHolder {
+			ImageView iv;
+			TextView tv_name;
+		}
+
+	}
+
+	private void getNearGames(boolean isrefresh) {
+		if (isrefresh) {
+			Index[type] = 1;
+			totalDataCount[type] = 1;
+			adapter1.clear();
+			adapter1.notifyDataSetChanged();
+		}
+
+		if (adapter1.getCount() >= totalDataCount[type]) {
+			listView1.notifyFootViewTextChange();
+			return;
+		}
+
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		if (mApplication.mLocation != null) {
+			params.put("long", mApplication.mLocation.getLongitude() + "");
+			params.put("lati", mApplication.mLocation.getLatitude() + "");
+		}
+		params.put("distance", 2000);
+		params.put("page", Index[type]++);
+		params.put("pagesize", "12");
+		if(mApplication.getLoginbean() != null){
+			params.put("token", mApplication.getLoginbean().token);
+		}
+		UIDataProcess.reqData(GamesNearBean.class, params, null,
+				new IResponseListener() {
+
+					@Override
+					public void onSuccess(Object arg0) {
+						// TODO Auto-generated method stub
+						GamesNearBean data = (GamesNearBean) arg0;
+						if (data != null) {
+							if (data.getFlg() == 1) {
+								System.out.println("data count==="
+										+ data.getCount());
+								totalDataCount[type] = data.getCount();
+								listView1.setTotalDataCount(data.getCount());
+								final List<GameInfo> item = data.getData();
+								if (item != null && item.size() > 0) {
+									new Thread() {
+
+										@Override
+										public void run() {
+											List<GameInfo> item2 = setApkStatus(item);
+											Message msg = notifyHandler
+													.obtainMessage(0, item2);
+											notifyHandler.sendMessage(msg);
+										}
+
+									}.start();
+								}
+
+							} else {
+								listView1.setTotalDataCount(0);
+								listView1.notifyFootViewTextChange();
+							}
+						} else {
+							showToast("无法获取信息");
+						}
+					}
+
+					@Override
+					public void onRuning(Object arg0) {
+
+					}
+
+					@Override
+					public void onReqStart() {
+						// ();
+					}
+
+					@Override
+					public void onFinish() {
+						// removeProgressDialog();
+					}
+
+					@Override
+					public void onFailure(Object arg0) {
+						listView1.setTotalDataCount(-1);
+						listView1.notifyFootViewTextChange();
+					}
+				});
+	}
+
+	Handler notifyHandler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			super.handleMessage(msg);
+			List<GameInfo> item = (List<GameInfo>) msg.obj;
+			adapter1.add(item);
+			adapter1.notifyDataSetChanged();
+			listView1.notifyFootViewTextChange();
+		}
+	};
+
+	private void getGameSort() {
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		UIDataProcess.reqData(GameSortBean.class, params, null,
+				new IResponseListener() {
+
+					@Override
+					public void onSuccess(Object arg0) {
+						// TODO Auto-generated method stub
+						GameSortBean data = (GameSortBean) arg0;
+						if (data != null) {
+							if (data.getFlg() == 1) {
+								siList = data.getData();
+								adapter3.notifyDataSetChanged();
+							} else if (data.getFlg() == 0) {
+								// showToast("没有数据");
+							}
+						} else {
+							showToast("无法获取信息");
+						}
+					}
+
+					@Override
+					public void onRuning(Object arg0) {
+
+					}
+
+					@Override
+					public void onReqStart() {
+						// showProgressDialog();
+					}
+
+					@Override
+					public void onFinish() {
+						removeProgressDialog();
+					}
+
+					@Override
+					public void onFailure(Object arg0) {
+						showToast("无法获取信息");
+					}
+				});
+	}
+
+	private void getGameGroups() {
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("long", mApplication.mLocation.getLongitude());
+		params.put("lati", mApplication.mLocation.getLatitude());
+		params.put("distance", 2000);
+		// params.put("page", "1");
+		// params.put("pagesize", "12");
+		params.put("token", mApplication.getLoginbean().token);
+		UIDataProcess.reqData(GamesNearBean.class, params, null,
+				new IResponseListener() {
+
+					@Override
+					public void onSuccess(Object arg0) {
+						// TODO Auto-generated method stub
+						GamesNearBean data = (GamesNearBean) arg0;
+						if (data != null) {
+							if (data.getFlg() == 1) {
+
+							} else if (data.getFlg() == 0) {
+								showToast("没有信息");
+							}
+						} else {
+							showToast("无法获取信息");
+						}
+					}
+
+					@Override
+					public void onRuning(Object arg0) {
+
+					}
+
+					@Override
+					public void onReqStart() {
+						// ();
+					}
+
+					@Override
+					public void onFinish() {
+						// removeProgressDialog();
+					}
+
+					@Override
+					public void onFailure(Object arg0) {
+						showToast("无法获取信息");
+					}
+				});
+	}
+
+	private void getUpdateList() {
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		if(mApplication.getLoginbean() != null){
+			params.put("token", mApplication.getLoginbean().token);
+		}
+		params.put("game_info", DataManager.newInstance().initUpdateJson(act));
+		UIDataProcess.reqData(GetUpdateApk.class, params, null,
+				new IResponseListener() {
+
+					@Override
+					public void onSuccess(Object arg0) {
+						// TODO Auto-generated method stub
+						GetUpdateApk data = (GetUpdateApk) arg0;
+						if (data != null) {
+							if (data.getFlg() == 1) {
+								updateList = data.getData();
+								ArrayList<ApkItem> updateListTemp = new ArrayList<ApkItem>();
+								if (null != GameFragment.updateList
+										&& GameFragment.updateList.size() > 0) {
+									for (GameInfo gi : GameFragment.updateList) {
+										// DownloadEntity de = new
+										// DownloadEntity(Util.GameInfoToAI(gi));
+										// de.downloadType = TYPE_OF_UPDATE;
+										// de.fileLength = (long)
+										// ((Float.parseFloat(gi.getSize()))*1024*1024);
+										// System.out.println("gilde---gi=" +
+										// gi.getGame_name() + " de=" +
+										// de.appName+" de.fileLength="+de.fileLength);
+										ApkItem item = Util.GameInfoToAI(gi);
+										item.fileSize = (long) ((Float
+												.parseFloat(gi.getSize())) * 1024 * 1024);
+										updateListTemp.add(item);
+									}
+									mApplication.setUpdateList(updateListTemp);
+									Intent intent = new Intent(
+											AConstDefine.BROADCAST_ACTION_APP_UPDATE_DATADONE);
+									act.sendBroadcast(intent);
+								}
+							}
+						} else {
+							// showToast("无法获取数据");
+						}
+					}
+
+					@Override
+					public void onRuning(Object arg0) {
+
+					}
+
+					@Override
+					public void onReqStart() {
+						// showProgressDialog();
+					}
+
+					@Override
+					public void onFinish() {
+						// removeProgressDialog();
+					}
+
+					@Override
+					public void onFailure(Object arg0) {
+						// showToast("无法获取数据");
+					}
+				});
+	}
+
+	@Override
+	public void onRefresh() {
+		switch (type) {
+		case 0:
+			getNearGames(true);
+			break;
+		case 1:
+			// loadGroupData(true);
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void onLoadMore() {
+		switch (type) {
+		case 0:
+			getNearGames(false);
+			break;
+		case 1:
+			// loadGroupData(false);
+			break;
+		default:
+			break;
+		}
+	}
+
+}

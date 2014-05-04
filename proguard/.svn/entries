@@ -1,0 +1,64 @@
+8
+
+dir
+930
+svn://192.168.0.115/wwt_android/MobileGame/proguard
+svn://192.168.0.115/wwt_android
+delete
+
+
+2014-01-09T07:51:05.075750Z
+879
+ch_chui
+
+
+svn:special svn:externals svn:needs-lock
+
+seeds.txt
+file
+
+
+
+delete
+2014-01-09T06:35:10.430615Z
+52d8e2c9771df8a1f405edfb9677e57f
+2014-01-09T07:51:05.075750Z
+879
+ch_chui
+
+usage.txt
+file
+
+
+
+delete
+2014-01-09T06:35:10.808637Z
+fdfb040213d636b3da5d4af99a35d7c4
+2014-01-09T07:51:05.075750Z
+879
+ch_chui
+
+dump.txt
+file
+
+
+
+delete
+2014-01-09T06:35:16.796979Z
+98dd1ae1ad37bbe4cd5f785c80517b0b
+2014-01-09T07:51:05.075750Z
+879
+ch_chui
+
+mapping.txt
+file
+
+
+
+delete
+2014-01-09T06:35:11.609682Z
+0c8c0c5c9155325b01a93f2c547c4757
+2014-01-09T07:51:05.075750Z
+879
+ch_chui
+

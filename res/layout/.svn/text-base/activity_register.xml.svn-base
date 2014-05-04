@@ -1,0 +1,79 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"
+        android:layout_marginTop="25dip"
+        android:background="@drawable/bg_register"
+        android:hint="请输入用户名"
+        android:paddingBottom="15dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="15dp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"
+        android:layout_marginTop="10dip"
+        android:background="@drawable/bg_register_up"
+        android:hint="请输入密码"
+        android:inputType="textPassword"
+        android:paddingBottom="15dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="15dp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/repit_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"
+        android:background="@drawable/bg_register_down"
+        android:hint="请重复密码确认"
+        android:inputType="textPassword"
+        android:paddingBottom="15dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="15dp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp" >
+
+        <ImageView
+            android:id="@+id/regist_nan"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="fitXY"
+            android:src="@drawable/button_register_nan_selector" />
+
+        <ImageView
+            android:id="@+id/regist_nv"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:scaleType="fitXY"
+            android:src="@drawable/button_register_nv_selector" />
+    </LinearLayout>
+
+</LinearLayout>

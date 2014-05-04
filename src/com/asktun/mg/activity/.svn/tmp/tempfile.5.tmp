@@ -1,0 +1,312 @@
+package com.asktun.mg.activity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import net.tsz.afinal.FinalActivity;
+import net.tsz.afinal.annotation.view.ViewInject;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.asktun.mg.BaseActivity;
+import com.asktun.mg.R;
+import com.asktun.mg.UIDataProcess;
+import com.asktun.mg.bean.GroupsNear;
+import com.asktun.mg.bean.GroupsNear.GroupsNearItem;
+import com.asktun.mg.utils.Util;
+import com.asktun.mg.view.XListView;
+import com.asktun.mg.view.XListView.IXListViewListener;
+import com.chen.jmvc.util.ExitDoubleClick;
+import com.chen.jmvc.util.IResponseListener;
+import com.chen.jmvc.util.PreferenceOperateUtils;
+import com.chen.jmvc.util.StrUtil;
+
+/**
+ * 推荐群组
+ * 
+ * @author Dean
+ */
+public class SuggestGroupActivity extends BaseActivity implements
+		IXListViewListener {
+
+	@ViewInject(id = R.id.listview)
+	private XListView listView;
+	@ViewInject(id = R.id.empty)
+	private TextView tv_empty;
+
+	private GroupAdapter adapter;
+
+	private String gameId;
+
+	private List<Integer> chooseList = new ArrayList<Integer>();
+	private Button rightView;
+
+	private PreferenceOperateUtils pou;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		initActionBar();
+		setAbContentView(R.layout.activity_suggestgroup);
+		FinalActivity.initInjectedView(this);
+		pou = new PreferenceOperateUtils(this);
+		gameId = getIntent().getStringExtra("gameId");
+		rightView = (Button) addRightButton("完成");
+//		rightView.setEnabled(false);
+		rightView.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				rightClick();
+			}
+		});
+		setTitleText("推荐群组");
+		init();
+	}
+
+	private void rightClick() {
+		if (chooseList.size() == 0) {
+			Intent intent = new Intent(this, LoginActivity.class);
+			startActivity(intent);
+			finish();
+		} else {
+			String GroupIds = "";
+			for (int position : chooseList) {
+				GroupIds += adapter.list.get(position).group_id + ",";
+			}
+			GroupIds = GroupIds.substring(0, GroupIds.length() - 1);
+			pou.setString("gameIds", gameId);
+			pou.setString("GroupIds", GroupIds);
+			Intent intent = new Intent(this, LoginActivity.class);
+			startActivity(intent);
+			finish();
+		}
+	}
+
+	private void init() {
+		adapter = new GroupAdapter();
+		listView.setAdapter(adapter);
+		listView.setEmptyView(tv_empty);
+		listView.setPullLoadEnable(false);
+		listView.setPullRefreshEnable(true);
+		listView.setXListViewListener(this);
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				if (chooseList.contains(arg2 - 1)) {
+					chooseList.remove((Object) (arg2 - 1));
+				} else {
+					chooseList.add(arg2 - 1);
+				}
+				if (chooseList.size() > 0) {
+					rightView.setEnabled(true);
+				} else {
+					rightView.setEnabled(false);
+				}
+				adapter.notifyDataSetChanged();
+			}
+		});
+		listView.startPullRefresh();
+
+	}
+
+	private class GroupAdapter extends BaseAdapter {
+
+		private List<GroupsNearItem> list = new ArrayList<GroupsNearItem>();
+
+		public void add(GroupsNearItem o) {
+			list.add(o);
+		}
+
+		public void clear() {
+			list.clear();
+		}
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return list.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public View getView(int arg0, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			ViewHolder holder;
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater.inflate(R.layout.item_suggestgroup,
+						null, false);
+				holder.iv = (ImageView) convertView.findViewById(R.id.image);
+				holder.tv_name = (TextView) convertView
+						.findViewById(R.id.tv_name);
+				holder.tv_count = (TextView) convertView
+						.findViewById(R.id.tv_count);
+				holder.tv_distance = (TextView) convertView
+						.findViewById(R.id.tv_distance);
+				holder.tv_descrip = (TextView) convertView
+						.findViewById(R.id.tv_descrip);
+				holder.tv_time = (TextView) convertView
+						.findViewById(R.id.tv_time);
+				holder.btn_apply = (Button) convertView
+						.findViewById(R.id.btn_apply);
+				holder.gou = (ImageView) convertView.findViewById(R.id.gou);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			final GroupsNearItem item = list.get(arg0);
+			holder.tv_name.setText(item.group_name);
+			holder.tv_descrip.setText(item.description);
+			holder.tv_count.setText(item.mem_ids + "位群组成员");
+			holder.tv_time.setText(Util.friendly_time(item.last_active_time));
+			String image = item.group_ico;
+			if (!StrUtil.isEmpty(image)) {
+				imageLoader.displayImage(image, holder.iv, options_person);
+			} else {
+				holder.iv.setImageResource(R.drawable.icon_person);
+			}
+			holder.btn_apply.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Intent intent_apply = new Intent(SuggestGroupActivity.this,
+							ApplyGroupActivity.class);
+					intent_apply.putExtra("groupId", item.group_id);
+					startActivity(intent_apply);
+				}
+			});
+			if (chooseList.contains(arg0)) {
+				holder.gou.setVisibility(View.VISIBLE);
+			} else {
+				holder.gou.setVisibility(View.INVISIBLE);
+			}
+			return convertView;
+		}
+
+		private class ViewHolder {
+			ImageView iv;
+			ImageView gou;
+			TextView tv_name;
+			TextView tv_count;
+			TextView tv_distance;
+			TextView tv_descrip;
+			TextView tv_time;
+			Button btn_apply;
+		}
+
+	}
+
+	private void loadGroupData() {
+		adapter.clear();
+		chooseList.clear();
+		adapter.notifyDataSetChanged();
+
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		// params.put("token", mApplication.getLoginbean().token);
+		// params.put("user_id", mApplication.getLoginbean().user_id);
+		params.put("gt_id", gameId);
+		// params.put("long", mApplication.mLocation.getLongitude() + "");
+		// params.put("lati", mApplication.mLocation.getLatitude() + "");
+		UIDataProcess.reqData(GroupsNear.class, params, 2,
+				new IResponseListener() {
+
+					@Override
+					public void onSuccess(Object arg0) {
+						GroupsNear data = (GroupsNear) arg0;
+						if (data.flg == 1) {
+							listView.setTotalDataCount(1);
+							List<GroupsNearItem> item = data.data;
+							int size = item.size();
+							for (int i = 0; i < size; i++) {
+								adapter.add(item.get(i));
+							}
+							adapter.notifyDataSetChanged();
+							listView.notifyFootViewTextChange();
+						} else {
+							listView.setTotalDataCount(-1);
+							listView.notifyFootViewTextChange();
+						}
+					}
+
+					@Override
+					public void onRuning(Object arg0) {
+
+					}
+
+					@Override
+					public void onReqStart() {
+
+					}
+
+					@Override
+					public void onFinish() {
+
+					}
+
+					@Override
+					public void onFailure(Object arg0) {
+						listView.setTotalDataCount(-1);
+						listView.notifyFootViewTextChange();
+					}
+				});
+
+	}
+
+	@Override
+	public void onRefresh() {
+		// TODO Auto-generated method stub
+		loadGroupData();
+	}
+
+	@Override
+	public void onLoadMore() {
+		// TODO Auto-generated method stub
+
+	}
+
+	// @Override
+	// public void leftBack() {
+	// // TODO Auto-generated method stub
+	// startActivity(PageFrameActivity.class);
+	// mApplication.clearActivity();
+	// finish();
+	// }
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			ExitDoubleClick.getInstance(this).doDoubleClick(3000, null);
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+	}
+
+}
